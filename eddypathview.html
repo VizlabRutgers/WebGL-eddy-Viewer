@@ -1,64 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Event View</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">		
-		
-		<script type="text/javascript" src="../eddyviz_webgl/lib/three.js"></script>
+  <head>
+    <title>Event View</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <script type="text/javascript" src="../eddyviz_webgl/lib/three.js"></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/SceneUtils.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/Projector.js"
+    ></script>
     <script type="text/javascript" src="../eddyviz_webgl/lib/Stats.js"></script>
-    <script type="text/javascript" src="../eddyviz_webgl/lib/TrackballControls.js"></script>
-    <script type="text/javascript" src="../eddyviz_webgl/lib/Detector.js"></script>
-    <script type="text/javascript" src="../eddyviz_webgl/lib/dat.gui.js"></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/TrackballControls.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/Detector.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/dat.gui.js"
+    ></script>
     <!--  <link type="text/css" rel="stylesheet" href="dat-gui-swec.css"> -->
-	  <script type="text/javascript" src="../eddyviz_webgl/lib/THREEx.KeyboardState.js"></script>
-    <script type="text/javascript" src="../eddyviz_webgl/lib/THREEx.FullScreen.js"></script>
-    <script type="text/javascript" src="../eddyviz_webgl/lib/THREEx.WindowResize.js"></script>
-		
-		<style>			
-			body 
-			{
-				color: #000;
-				font-family:Monospace;
-				font-size:11px;
-				background-color: #fff;
-				margin: 0px;
-			}
-			
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/THREEx.KeyboardState.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/THREEx.FullScreen.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="../eddyviz_webgl/lib/THREEx.WindowResize.js"
+    ></script>
 
-			#content 
-			{
-				position: absolute;
-				top: 0px; 
-				left: 90%;
-				width: 140px;
-				z-index: 1;
-				padding: 1em 0 0 0;
-			}
-			
-			
-			#maincontent 
-			{
-				position: fixed;
-				top: 3px; 
-				left: 3px;
-				width: 1300px;
-				z-index: 1;
-				padding: 3em 0 0 0;
-			}
-			
-			#gui
-			{
-        transform:translate(0, -85px);
+    <style>
+      body {
+        color: #000;
+        font-family: Monospace;
+        font-size: 11px;
+        background-color: #fff;
+        margin: 0px;
       }
-      
-      
-      #inset  
-      {
+
+      #content {
+        position: absolute;
+        top: 0px;
+        left: 90%;
+        width: 140px;
+        z-index: 1;
+        padding: 1em 0 0 0;
+      }
+
+      #maincontent {
+        position: fixed;
+        top: 3px;
+        left: 3px;
+        width: 1300px;
+        z-index: 1;
+        padding: 3em 0 0 0;
+      }
+
+      #gui {
+        transform: translate(0, -85px);
+      }
+
+      #inset {
         width: 270px;
         height: 180px;
-        border: 0px rgba(200,200,200,0.0) solid;
-        background-color: rgba(235,235,235,0.75); /* or transparent; will show through only if renderer alpha: true */
+        border: 0px rgba(200, 200, 200, 0) solid;
+        background-color: rgba(
+          235,
+          235,
+          235,
+          0.75
+        ); /* or transparent; will show through only if renderer alpha: true */
         margin: 3px;
         padding: 0px;
         position: fixed;
@@ -66,545 +91,1544 @@
         bottom: -3px;
         z-index: 1;
       }
-			
-			
-			#mycanvas
-			{
-				position: fixed;
-				left: 0px;
-				width: 100%;
-				height: 100%;
-			}
-			
-			
-			
-			#colorbarcanvas
-			{
-				position: fixed;
-				left: 40%;
-				top: 10px;
-				width: 350px;
-				height: 100px;
-			}
-		  
-			
-			
-			.main-item 
-			{
-				display: inline-block;
-				margin: 1em;
-				padding: 1em;
-			}
-			
-			.main-item .graph 
-			{
-				width: 1300px;
-				height: 1000px;
-			}
-			
-			
 
-			.list-item 
-			{
-				display: inline-block;
-				margin: 0.25em;
-				padding: 0.25em;
-				box-shadow: 1px 2px 3px 0px rgba(240,240,240,0.1);
-			}
+      #mycanvas {
+        position: fixed;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+      }
 
-			.list-item .scene 
-			{
-				width: 120px;
-				height: 120px;
-				background-color: rgba(0,0,0,0.05);
-			}
+      #colorbarcanvas {
+        position: fixed;
+        left: 40%;
+        top: 10px;
+        width: 350px;
+        height: 100px;
+      }
 
-			.list-item .description 
-			{
-				color: #888;
-				font-family: sans-serif;
-				font-size: large;
-				width: 120px;
-				margin-top: 0.1em;
-			}
-			
-			
-			.longtext {
+      .main-item {
+        display: inline-block;
+        margin: 1em;
+        padding: 1em;
+      }
+
+      .main-item .graph {
+        width: 1300px;
+        height: 1000px;
+      }
+
+      .list-item {
+        display: inline-block;
+        margin: 0.25em;
+        padding: 0.25em;
+        box-shadow: 1px 2px 3px 0px rgba(240, 240, 240, 0.1);
+      }
+
+      .list-item .scene {
+        width: 120px;
+        height: 120px;
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+
+      .list-item .description {
+        color: #888;
+        font-family: sans-serif;
+        font-size: large;
+        width: 120px;
+        margin-top: 0.1em;
+      }
+
+      .longtext {
         line-height: 13px !important;
         height: 40px !important;
-    }
-    
-    .full_width {
+      }
+
+      .full_width {
         width: 100% !important;
-    }
-			
-			
-		</style>
-	</head>
-	
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <canvas id="mycanvas"></canvas>
+    <canvas id="colorbarcanvas"></canvas>
 
-<canvas id="mycanvas"></canvas>		
-<canvas id="colorbarcanvas"></canvas>	
+    <input id="myInput" type="file" style="visibility: hidden" />
 
-<input id="myInput" type="file" style="visibility:hidden"/>
+    <div id="content"></div>
+    <div id="maincontent"></div>
 
-<div id="content"> </div>
-<div id="maincontent"> </div>
+    <script id="template" type="notjs">
+      <div class="scene"></div>
+      <div class="description">Eddy $</div>
+    </script>
 
-<script id="template" type="notjs">
-	<div class="scene"></div>
-	<div class="description">Eddy $</div>
-</script>
+    <script id="maintemplate" type="notjs">
+      <div class="graph"></div>
+    </script>
 
+    <div id="inset"></div>
 
+    <script>
+      var canvas, content, maincontent, template, container2, gui, eddypro;
+      var mainscene,
+        mainmesh,
+        selectedmesh,
+        maincamera,
+        camera2,
+        renderer,
+        renderer2,
+        currentmesh;
+      var trackballControls;
+      var scenes = [];
+      var scene2;
+      var elementlist = [],
+        meshlist = [],
+        geometrylist = [],
+        materiallist = [],
+        targetList = [];
+      var cx_array = [],
+        cy_array = [],
+        cz_array = [],
+        depth_array = [],
+        radius_array = [],
+        mapradius_array = [],
+        volume_array = [],
+        minmaxarray = [];
+      var temparray0 = [],
+        redarray0 = [],
+        greenarray0 = [],
+        bluearray0 = [];
+      var temparray1 = [],
+        redarray1 = [],
+        greenarray1 = [],
+        bluearray1 = [];
+      var temparray2 = [],
+        redarray2 = [],
+        greenarray2 = [],
+        bluearray2 = [];
+      var temparray3 = [],
+        redarray3 = [],
+        greenarray3 = [],
+        bluearray3 = [];
 
-<script id="maintemplate" type="notjs">
-	<div class="graph"></div>
-</script>
+      var filename = "",
+        dateperiod = "";
+      var legendleft = 0,
+        legendright = 0;
 
+      var mainmat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        vertexColors: THREE.VertexColors,
+        transparent: true,
+        blending: THREE.MultiplyBlending,
+      });
+      var cubeMaterial = new THREE.MeshDepthMaterial();
+      var sidemat = new THREE.MeshLambertMaterial({ color: 0x66cc00 });
+      var insetmat = new THREE.MeshBasicMaterial({ color: 0x66cc00 });
+      var saved_mat;
 
-<div id="inset"> </div>		
-		
-<script>
-			
-var canvas, content, maincontent, template, container2, gui, eddypro;
-var mainscene, mainmesh, selectedmesh, maincamera, camera2, renderer, renderer2, currentmesh;
-var trackballControls;
-var scenes = [];
-var scene2;
-var elementlist = [], meshlist = [], geometrylist = [], materiallist = [], targetList = [];
-var cx_array = [], cy_array = [], cz_array = [],  depth_array = [], radius_array = [], mapradius_array = [], volume_array = [], minmaxarray = [];
-var temparray0 = [], redarray0 = [], greenarray0 = [], bluearray0 = [];
-var temparray1 = [], redarray1 = [], greenarray1 = [], bluearray1 = [];
-var temparray2 = [], redarray2 = [], greenarray2 = [], bluearray2 = [];
-var temparray3 = [], redarray3 = [], greenarray3 = [], bluearray3 = [];
+      var clock = new THREE.Clock();
+      var pivot = new THREE.Group();
+      var group = new THREE.Object3D();
 
-var filename = "", dateperiod = "";
-var legendleft = 0, legendright = 0;
+      var projector = new THREE.Projector();
+      var mouse = { x: 0, y: 0 };
 
-var mainmat = new THREE.MeshBasicMaterial({ color: 0xffffff, vertexColors: THREE.VertexColors, transparent: true, blending: THREE.MultiplyBlending });
-var cubeMaterial = new THREE.MeshDepthMaterial();
-var sidemat = new THREE.MeshLambertMaterial({color: 0x66cc00});  
-var insetmat = new THREE.MeshBasicMaterial({color: 0x66cc00});  
-var saved_mat; 
+      displaymodes = { a: false, b: false };
+      var eddyvariables = { a: false, b: false, c: false };
+      var currentDataFile = "";
+      var generalcontrols, eddyproperties;
+      var temp_max = 0,
+        temp_min = 0,
+        salt_max = 0,
+        salt_min = 0,
+        speed_max = 0,
+        speed_min = 0;
+      var eddy_num = 0,
+        distance = 0;
+      var spin_orientation = 0;
+      var currentEddyID = 1;
 
-var clock = new THREE.Clock();
-var pivot = new THREE.Group(); 
-var group = new THREE.Object3D();
+      var infoWindow;
 
-var projector = new THREE.Projector();
-var mouse = { x: 0, y: 0 };
+      var CANVAS_WIDTH = 270,
+        CANVAS_HEIGHT = 180,
+        CAM_DISTANCE = 10;
+      var shiftscale = 15;
 
-displaymodes = { a: false, b: false }  
-var eddyvariables = { a: false, b: false, c: false } 
-var currentDataFile = '';
-var generalcontrols, eddyproperties;
-var temp_max=0, temp_min=0, salt_max=0, salt_min=0, speed_max=0, speed_min=0;
-var eddy_num = 0, distance = 0;
-var spin_orientation = 0;
-var currentEddyID = 1;
+      init();
+      animate();
 
-var infoWindow;
+      function init() {
+        generalcontrols = new (function () {
+          this.rotationSpeed = 0.02;
+          this.bouncingSpeed = 0.03;
 
-var CANVAS_WIDTH = 270, CANVAS_HEIGHT = 180, CAM_DISTANCE = 10;
-var shiftscale = 15;
+          this.visible = mainmat.visible;
+          this.side = "front";
 
+          this.transparent = mainmat.transparent;
 
+          this.wireframe = mainmat.wireframe;
+          this.wireframeLinewidth = mainmat.wireframeLinewidth;
 
-init();
-animate();
+          this.selectedMesh = "Temperature";
+          this.shadow = "flat";
+        })();
 
-function init() 
-{		
-	  generalcontrols = new function () 
-	  {
-        this.rotationSpeed = 0.02;
-        this.bouncingSpeed = 0.03;
-
-        this.visible = mainmat.visible;
-        this.side = "front";
-        
-        this.transparent = mainmat.transparent;
-
-        this.wireframe = mainmat.wireframe;
-        this.wireframeLinewidth = mainmat.wireframeLinewidth;
-
-        this.selectedMesh = "Temperature";
-        this.shadow = "flat";
-    };
-    
-    
-    eddyproperties = function ()
-    {
-    	  this['Date'] = '0'; 
-    	  this['Orientation'] = '0';
-    	  this['Depth'] = '0'; 
-    	  this['Radius'] = '0';
-    	  this['Volume'] = '0';
-    	  this['Distance'] = '0';
-    	  this['Duration'] = '0';
-    };
-    	
-		canvas = document.getElementById( "mycanvas" );		
-		    
-	  maincamera = new THREE.PerspectiveCamera(60, (window.innerWidth-160) / window.innerHeight, 0.1, 1000);  	  
-	  maincamera.position.x = 0;
-    maincamera.position.y = 0;
-    maincamera.position.z = 2.5;
-
-		template = document.getElementById( "template" ).text;			
-		content = document.getElementById( "content" );		
-
-    readcolorfile ("seashorergb.txt", 0);  
-    readcolorfile ("parula.txt", 1); 
-    readcolorfile ("gnuplot.txt", 2);    
-    readcolorfile ("dawnrgb.txt", 3);       
-        
-    eddyvariables['a'] = true;					
-    
-    maincontent = document.getElementById( "maincontent" );
-    mainscene = new THREE.Scene();
-    
-    var mainelement = document.createElement( "div" );
-		mainelement.className = "main-item";
-
-	  mainscene.userData.element = mainelement.querySelector( ".graph" );
-		maincontent.appendChild( mainelement );
-    
-	  	  	  
-	  trackballControls = new THREE.TrackballControls(maincamera);
-    trackballControls.rotateSpeed = 1.0;
-    trackballControls.zoomSpeed = 1.0;
-    
-    //trackballControls.minDistance = 0.1;
-    trackballControls.maxDistance = 45;
-    
-    trackballControls.panSpeed = 1.0;
-    trackballControls.noPan = false;
-    trackballControls.staticMoving = false;
-    trackballControls.dynamicDampingFactor = 0.3;
-    trackballControls.keys = [ 65, 83, 68 ];
-       
-	  
-	  var hemilight = new THREE.HemisphereLight( 0xaaaaaa, 0xFF0000 );
-		hemilight.position.set( 1, 1, 10 );
-		mainscene.add( hemilight );
-		
-		var ambiColor = "#0c0c0c";
-    var ambientLight = new THREE.AmbientLight(ambiColor);
-    mainscene.add( ambientLight );
-				
-
-    renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
-		//renderer.setPixelRatio( window.devicePixelRatio );			
-		renderer.setSize( canvas.clientWidth, canvas.clientHeight, false );	
-		
-		document.addEventListener("dblclick", ondblclick, false);		
-	
-	  gui = new dat.GUI({ autoPlace: false });
-    gui.domElement.id = 'gui';
-      
-    maincontent.appendChild(gui.domElement);	
-     
-    
-    var GuiConfig = function() 
-    {
-        this['File Name'] = 'No Data Loaded'; 
-        this['Load a *.path File'] = function() 
-        {        	        	
-            var input = document.getElementById("myInput");
-                
-            input.addEventListener('change', function(evt) 
-            {                          
-                for (var i in gui.__controllers) 
-                {
-                    gui.__controllers[i].updateDisplay();
-                } 
-                
-                var filelist = evt.target.files;
-                currentDataFile = filelist[0];
-                
-                config['File Name'] = currentDataFile.name;                    
-                
-                filename = currentDataFile.name;          
-                
-                readdatafile(currentDataFile);                                                            
-            });
-        
-            input.click();
+        eddyproperties = function () {
+          this["Date"] = "0";
+          this["Orientation"] = "0";
+          this["Depth"] = "0";
+          this["Radius"] = "0";
+          this["Volume"] = "0";
+          this["Distance"] = "0";
+          this["Duration"] = "0";
         };
-        
-        
-        this['Export Data Information'] = function() 
-        {  
-        	  if (infoWindow != null && ! infoWindow.closed)
-            	 infoWindow.close();
-            	 
+
+        canvas = document.getElementById("mycanvas");
+
+        maincamera = new THREE.PerspectiveCamera(
+          60,
+          (window.innerWidth - 160) / window.innerHeight,
+          0.1,
+          1000
+        );
+        maincamera.position.x = 0;
+        maincamera.position.y = 0;
+        maincamera.position.z = 2.5;
+
+        template = document.getElementById("template").text;
+        content = document.getElementById("content");
+
+        readcolorfile("seashorergb.txt", 0);
+        readcolorfile("parula.txt", 1);
+        readcolorfile("gnuplot.txt", 2);
+        readcolorfile("dawnrgb.txt", 3);
+
+        eddyvariables["a"] = true;
+
+        maincontent = document.getElementById("maincontent");
+        mainscene = new THREE.Scene();
+
+        var mainelement = document.createElement("div");
+        mainelement.className = "main-item";
+
+        mainscene.userData.element = mainelement.querySelector(".graph");
+        maincontent.appendChild(mainelement);
+
+        trackballControls = new THREE.TrackballControls(maincamera);
+        trackballControls.rotateSpeed = 1.0;
+        trackballControls.zoomSpeed = 1.0;
+
+        //trackballControls.minDistance = 0.1;
+        trackballControls.maxDistance = 45;
+
+        trackballControls.panSpeed = 1.0;
+        trackballControls.noPan = false;
+        trackballControls.staticMoving = false;
+        trackballControls.dynamicDampingFactor = 0.3;
+        trackballControls.keys = [65, 83, 68];
+
+        var hemilight = new THREE.HemisphereLight(0xaaaaaa, 0xff0000);
+        hemilight.position.set(1, 1, 10);
+        mainscene.add(hemilight);
+
+        var ambiColor = "#0c0c0c";
+        var ambientLight = new THREE.AmbientLight(ambiColor);
+        mainscene.add(ambientLight);
+
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        //renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+
+        document.addEventListener("dblclick", ondblclick, false);
+
+        // Create GUI from dat.gui
+        gui = new dat.GUI({ autoPlace: false });
+        gui.domElement.id = "gui";
+
+        maincontent.appendChild(gui.domElement);
+
+        var GuiConfig = function () {
+          this["File Name"] = "No Data Loaded";
+          this["Load a *.path File"] = function () {
+            var input = document.getElementById("myInput");
+
+            input.addEventListener("change", function (evt) {
+              for (var i in gui.__controllers) {
+                gui.__controllers[i].updateDisplay();
+              }
+
+              var filelist = evt.target.files;
+              currentDataFile = filelist[0];
+
+              config["File Name"] = currentDataFile.name;
+
+              filename = currentDataFile.name;
+
+              readdatafile(currentDataFile);
+            });
+
+            input.click();
+          };
+
+          this["Export Data Information"] = function () {
+            if (infoWindow != null && !infoWindow.closed) infoWindow.close();
+
             var Depth_Max = round(Math.max.apply(null, depth_array), 2);
             var Depth_Min = round(Math.min.apply(null, depth_array), 2);
-            var Radius_Max = round(Math.max.apply(null, radius_array), 2); 
-            var Radius_Min = round(Math.min.apply(null, radius_array), 2); 
-            var Volume_Max = round(Math.max.apply(null, volume_array), 2); 
-            var Volume_Min = round(Math.min.apply(null, volume_array), 2);                     
-             
-            var Depth_Sum=0, Radius_Sum=0, Volume_Sum=0;
-             
-            for (var i1=0; i1<depth_array.length; i1++)
-            {    	   	  
-             	  Depth_Sum = Depth_Sum + depth_array[i1];
-             	  Radius_Sum = Radius_Sum + radius_array[i1];
-             	  Volume_Sum = Volume_Sum + volume_array[i1];             	 
+            var Radius_Max = round(Math.max.apply(null, radius_array), 2);
+            var Radius_Min = round(Math.min.apply(null, radius_array), 2);
+            var Volume_Max = round(Math.max.apply(null, volume_array), 2);
+            var Volume_Min = round(Math.min.apply(null, volume_array), 2);
+
+            var Depth_Sum = 0,
+              Radius_Sum = 0,
+              Volume_Sum = 0;
+
+            for (var i1 = 0; i1 < depth_array.length; i1++) {
+              Depth_Sum = Depth_Sum + depth_array[i1];
+              Radius_Sum = Radius_Sum + radius_array[i1];
+              Volume_Sum = Volume_Sum + volume_array[i1];
             }
-         
-             
-            var Depth_Avg = round(Depth_Sum/depth_array.length, 2), Radius_Avg = round(Radius_Sum/depth_array.length, 2), Volume_Avg = round(Volume_Sum/depth_array.length, 2);
-            	 
-            
-            var showtext = "###### Information of the Eddy Path ######".bold() + '<br>';
-            
+
+            var Depth_Avg = round(Depth_Sum / depth_array.length, 2),
+              Radius_Avg = round(Radius_Sum / depth_array.length, 2),
+              Volume_Avg = round(Volume_Sum / depth_array.length, 2);
+
+            var showtext =
+              "###### Information of the Eddy Path ######".bold() + "<br>";
+
             //showtext = showtext + temp_min + '&nbsp' + temp_max + '&nbsp' + salt_min + '&nbsp' + salt_max + '&nbsp' + speed_min + '&nbsp' + speed_max + '<br>' + '<br>';
-            
-            
-            showtext = showtext + "- File Name: ".bold() + filename + '<br>' + '<br>';
-            showtext = showtext + "- Number of Steps: ".bold() + '&nbsp' + depth_array.length + '<br>' + '<br>'; 
-                        
-            showtext = showtext + "- Distance (km): ".bold() + '&nbsp' + round(distance, 2) + '<br>' + '<br>'; 
-            showtext = showtext + "- Duration : ".bold() + '&nbsp' + dateperiod + '<br>' + '<br>';
-                                                
-            showtext = showtext + "- Depth (m)".bold() + '&nbsp &nbsp' + "Max: " + Depth_Max + '&nbsp &nbsp &nbsp' + "Min: " + Depth_Min + '&nbsp &nbsp &nbsp' + "Avg.: " + Depth_Avg + '<br>' + '<br>';                
-            showtext = showtext + "- Radius (km)".bold() + '&nbsp &nbsp' + "Max: " + Radius_Max + '&nbsp &nbsp &nbsp' + "Min: " + Radius_Min + '&nbsp &nbsp &nbsp' + " Avg.: " + Radius_Avg + '<br>' + '<br>';                                                           
-            showtext = showtext + "- Volume (km3)".bold() + '&nbsp &nbsp' + "Max: " + Volume_Max + '&nbsp &nbsp &nbsp' + "Min: " + Volume_Min + '&nbsp &nbsp &nbsp' + " Avg.: " + Volume_Avg + '<br>' + '<br>';           
-             
-            showtext = showtext + "- Temperature ".bold() + '&nbsp &nbsp' + "Max: " + temp_max + '&nbsp &nbsp &nbsp' + "Min: " + temp_min + '<br>' + '<br>';
-            showtext = showtext + "- Salinity (g/kg)".bold() + '&nbsp &nbsp' + "Max: " + salt_max + '&nbsp &nbsp &nbsp' + "Min: " + salt_min + '<br>' + '<br>';
-            showtext = showtext + "- Speed (m/s)".bold() + '&nbsp &nbsp' + "Max: " + speed_max + '&nbsp &nbsp &nbsp' + "Min: " + speed_min + '<br>' + '<br>' + '<br>'; 
-                                                                           
-            showtext = showtext + "###### Information of the Selected Eddy ######".bold() + '<br>';
-                
-            showtext = showtext + "- Eddy ID: ".bold() + currentEddyID + '<br>' + '<br>';
-            showtext = showtext + "- Depth (m): ".bold()+ round(depth_array[currentEddyID-1], 2) + '<br>' + '<br>'; 
-            showtext = showtext + "- Radius (km): ".bold()+ round(radius_array[currentEddyID-1], 2) + '<br>' + '<br>'; 
-            showtext = showtext + "- Volume (km3): ".bold()+ round(volume_array[currentEddyID-1], 2) + '<br>' + '<br>'; 
-                
-            showtext = showtext + "- Temperature ".bold() + '&nbsp &nbsp' + "Max: " + round(minmaxarray[currentEddyID-1].tmax, 2) + '&nbsp &nbsp &nbsp' + "Min: " + round(minmaxarray[currentEddyID-1].tmin, 2) + '<br>' + '<br>';
-            showtext = showtext + "- Salinity (g/kg)".bold() + '&nbsp &nbsp' + "Max: " + round(minmaxarray[currentEddyID-1].stmax, 2) + '&nbsp &nbsp &nbsp' + "Min: " + round(minmaxarray[currentEddyID-1].stmin, 2) + '<br>' + '<br>';
-            showtext = showtext + "- Speed (m/s)".bold() + '&nbsp &nbsp' + "Max: " + round(minmaxarray[currentEddyID-1].spdmax, 2) + '&nbsp &nbsp &nbsp' + "Min: " + round(minmaxarray[currentEddyID-1].spdmin, 2) + '<br>' + '<br>';
-                                    	 
-            infoWindow = window.open("", "Information Window", "width=480,height=720");   
-            infoWindow.document.write(showtext);   
-        };                
-    };
-    
-                 
-    var config = new GuiConfig();
-    gui.add(config, 'Load a *.path File'); 
-    gui.add(config, 'Export Data Information'); 
-    gui.add(config, 'File Name', config['File Name']);
-    
-    eddypro = new eddyproperties();
-    gui.add(eddypro, 'Date', eddypro['Date']);  
-    gui.add(eddypro, 'Orientation', eddypro['Orientation']);  
-    gui.add(eddypro, 'Duration', eddypro['Duration']);
-    gui.add(eddypro, 'Distance', eddypro['Distance']);
-               
-    gui.add(displaymodes, 'a').name('Individual Eddy').listen().onChange(function(){setMode("a")});
-    gui.add(displaymodes, 'b').name('Whole Eddy Path').listen().onChange(function(){setMode("b")});
-    
-    
-    //var spGui = gui.addFolder("\xa0 Visualization Options");       
-    //spGui.add(generalcontrols, 'transparent').onChange(function (e) { mainmat.transparent = e });        
-    gui.add(generalcontrols, 'wireframe').onChange(function (e) { mainmat.wireframe = e });
-    //spGui.add(generalcontrols, 'visible').onChange(function (e) { mainmat.visible = e });
-        
-    
-    var vpGui = gui.addFolder("\xa0 Color Coding Options");
-    gui.add(eddyvariables, 'a').name('Temperature').listen().onChange(function(){setVariable("a")});
-    gui.add(eddyvariables, 'b').name('Salinity').listen().onChange(function(){setVariable("b")});
-    gui.add(eddyvariables, 'c').name('Speed').listen().onChange(function(){setVariable("c")});    
-    
-    var ifGui = gui.addFolder("\xa0 Information of the Selected Eddy");       
-    gui.add(eddypro, 'Depth', eddypro['Depth']);
-    gui.add(eddypro, 'Radius', eddypro['Radius']);
-    gui.add(eddypro, 'Volume', eddypro['Volume']);    
 
+            showtext =
+              showtext + "- File Name: ".bold() + filename + "<br>" + "<br>";
+            showtext =
+              showtext +
+              "- Number of Steps: ".bold() +
+              "&nbsp" +
+              depth_array.length +
+              "<br>" +
+              "<br>";
 
-    gui.__ul.childNodes[0].childNodes[0].childNodes[0].classList += ' full_width'; 
-    gui.__ul.childNodes[1].childNodes[0].childNodes[0].classList += ' full_width'; 
-    
-    
-  
-    scene2 = new THREE.Scene();       
-    renderer2 = new THREE.WebGLRenderer({ alpha: true });
-    renderer2.setClearColor( 0xffffff, 0.00 );
-    renderer2.setSize( CANVAS_WIDTH, CANVAS_HEIGHT );
+            showtext =
+              showtext +
+              "- Distance (km): ".bold() +
+              "&nbsp" +
+              round(distance, 2) +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Duration : ".bold() +
+              "&nbsp" +
+              dateperiod +
+              "<br>" +
+              "<br>";
 
-    container2 = document.getElementById('inset');
-    container2.appendChild( renderer2.domElement );    
-    
-    window.addEventListener( 'resize', onWindowResize, false );            
-}
+            showtext =
+              showtext +
+              "- Depth (m)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              Depth_Max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              Depth_Min +
+              "&nbsp &nbsp &nbsp" +
+              "Avg.: " +
+              Depth_Avg +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Radius (km)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              Radius_Max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              Radius_Min +
+              "&nbsp &nbsp &nbsp" +
+              " Avg.: " +
+              Radius_Avg +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Volume (km3)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              Volume_Max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              Volume_Min +
+              "&nbsp &nbsp &nbsp" +
+              " Avg.: " +
+              Volume_Avg +
+              "<br>" +
+              "<br>";
 
+            showtext =
+              showtext +
+              "- Temperature ".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              temp_max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              temp_min +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Salinity (g/kg)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              salt_max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              salt_min +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Speed (m/s)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              speed_max +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              speed_min +
+              "<br>" +
+              "<br>" +
+              "<br>";
 
+            showtext =
+              showtext +
+              "###### Information of the Selected Eddy ######".bold() +
+              "<br>";
 
-function readcolorfile (colorfile, sign)
-{
-    var xhttp0 = new XMLHttpRequest();
-    xhttp0.onreadystatechange = function() 
-    {
-        	 if (this.readyState == 4 && this.status == 200) 
-        	 {
-        	  	 var inputlines = this.responseText.split("\n");
-        	  	 
-        	  	 for (var i=0; i<inputlines.length; i++)
-               {
-               	   var thisline = inputlines[i];
-              	   var vectors = thisline.split("  ");
-              	   
-              	   if (sign == 0)
-              	   {
-              	      temparray0.push(parseFloat(vectors[0]));
-              	      redarray0.push(parseFloat(vectors[1]));
-              	      greenarray0.push(parseFloat(vectors[2]));
-              	      bluearray0.push(parseFloat(vectors[3]));
-              	   }
-              	   
-              	   else if (sign == 1)
-              	   {
-              	      temparray1.push(parseFloat(vectors[0]));
-              	      redarray1.push(parseFloat(vectors[1]));
-              	      greenarray1.push(parseFloat(vectors[2]));
-              	      bluearray1.push(parseFloat(vectors[3]));
-              	   }
-              	   
-              	   else if (sign == 2)
-              	   {
-              	      temparray2.push(parseFloat(vectors[0]));
-              	      redarray2.push(parseFloat(vectors[1]));
-              	      greenarray2.push(parseFloat(vectors[2]));
-              	      bluearray2.push(parseFloat(vectors[3]));
-              	   }
-              	   
-              	   else if (sign == 3)
-              	   {
-              	      temparray3.push(parseFloat(vectors[0]));
-              	      redarray3.push(parseFloat(vectors[1]));
-              	      greenarray3.push(parseFloat(vectors[2]));
-              	      bluearray3.push(parseFloat(vectors[3]));
-              	   }
-               }
-        	 }
-    }
-       
-    xhttp0.open("GET", colorfile, true);
-    xhttp0.send();   
-}
+            showtext =
+              showtext + "- Eddy ID: ".bold() + currentEddyID + "<br>" + "<br>";
+            showtext =
+              showtext +
+              "- Depth (m): ".bold() +
+              round(depth_array[currentEddyID - 1], 2) +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Radius (km): ".bold() +
+              round(radius_array[currentEddyID - 1], 2) +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Volume (km3): ".bold() +
+              round(volume_array[currentEddyID - 1], 2) +
+              "<br>" +
+              "<br>";
 
+            showtext =
+              showtext +
+              "- Temperature ".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              round(minmaxarray[currentEddyID - 1].tmax, 2) +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              round(minmaxarray[currentEddyID - 1].tmin, 2) +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Salinity (g/kg)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              round(minmaxarray[currentEddyID - 1].stmax, 2) +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              round(minmaxarray[currentEddyID - 1].stmin, 2) +
+              "<br>" +
+              "<br>";
+            showtext =
+              showtext +
+              "- Speed (m/s)".bold() +
+              "&nbsp &nbsp" +
+              "Max: " +
+              round(minmaxarray[currentEddyID - 1].spdmax, 2) +
+              "&nbsp &nbsp &nbsp" +
+              "Min: " +
+              round(minmaxarray[currentEddyID - 1].spdmin, 2) +
+              "<br>" +
+              "<br>";
 
+            infoWindow = window.open(
+              "",
+              "Information Window",
+              "width=480,height=720"
+            );
+            infoWindow.document.write(showtext);
+          };
+        };
 
+        var config = new GuiConfig();
+        gui.add(config, "Load a *.path File");
+        gui.add(config, "Export Data Information");
+        gui.add(config, "File Name", config["File Name"]);
 
+        eddypro = new eddyproperties();
+        gui.add(eddypro, "Date", eddypro["Date"]);
+        gui.add(eddypro, "Orientation", eddypro["Orientation"]);
+        gui.add(eddypro, "Duration", eddypro["Duration"]);
+        gui.add(eddypro, "Distance", eddypro["Distance"]);
 
-function readdatafile(datafile)
-{
-	  var reader = new FileReader();  
-	                
-    reader.onload = function(e) 
-    {                 	
-       document.getElementById("content").innerHTML = "";
-       elementlist = [], geometrylist = [], materiallist = [], targetList = [];
-       depth_array = [], radius_array = [], mapradius_array = [], volume_array = [], cx_array = [], cy_array = [], cz_array = [], minmaxarray = [];
-                	
-       var text = e.target.result;                
-       var inputlines = text.split(/[\r\n]+/g); 
-       
-       
-       var file_extension = inputlines[0];
-       
-       if (file_extension != "******path******")
-       {
-       	  alert("The File Can Not be Readed! Please Select a *.path File.");
-          return;
-       }
-       
-    	 var date_period = inputlines[1].split("  "); 
-    	 var date_start = date_period[0];
-    	 var date_end = date_period[1];
-       dateperiod = date_start + " - " + date_end;      
-       eddypro['Date'] = dateperiod;
-       
-       var pathproperties = inputlines[2].split(" "); 
-       temp_min = parseFloat(pathproperties[0]);
-       temp_max = parseFloat(pathproperties[1]);
-       salt_min = parseFloat(pathproperties[2]);
-       salt_max = parseFloat(pathproperties[3]);
-       speed_min = parseFloat(pathproperties[4]);
-       speed_max = parseFloat(pathproperties[5]);
+        gui
+          .add(displaymodes, "a")
+          .name("Individual Eddy")
+          .listen()
+          .onChange(function () {
+            setMode("a");
+          });
+        gui
+          .add(displaymodes, "b")
+          .name("Whole Eddy Path")
+          .listen()
+          .onChange(function () {
+            setMode("b");
+          });
 
-       
-       if (eddyvariables['a'] == true)
-	     {
-	  	    legendleft = temp_min;
-          legendright = temp_max;
-	     }
-	  
-	     else if (eddyvariables['b'] == true)
-	     {
-	  	    legendleft = salt_min;
-          legendright = salt_max;
-	     }
+        //var spGui = gui.addFolder("\xa0 Visualization Options");
+        //spGui.add(generalcontrols, 'transparent').onChange(function (e) { mainmat.transparent = e });
+        gui.add(generalcontrols, "wireframe").onChange(function (e) {
+          mainmat.wireframe = e;
+        });
+        //spGui.add(generalcontrols, 'visible').onChange(function (e) { mainmat.visible = e });
 
-	     else if (eddyvariables['c'] == true)
-	     {
-	  	    legendleft = parseFloat(speed_min);
-          legendright = parseFloat(speed_max);
-	     }
-	     
-	     //console.log(legendleft);
-	     //console.log(legendright);
-       
-       
-       spin_orientation = parseInt(inputlines[3]);
-		//console.log(spin_orientation);
-       
-       if (spin_orientation >= 0)
-       {
-		//console.log("spin >=0");
-          sidemat = new THREE.MeshLambertMaterial({color: 0x66cc00}); 
-          insetmat = new THREE.MeshBasicMaterial({color: 0x00CC00}); 
-          
-          eddypro['Orientation'] = "Counter-Clockwise";   
-       } 
-          
-       else if (spin_orientation < 0)
-       {
-		//console.log("spin <0");
-          sidemat = new THREE.MeshLambertMaterial({color: 0x6600cc});
-          insetmat = new THREE.MeshBasicMaterial({color: 0x4C0099}); 
-          
-          eddypro['Orientation'] = "Clockwise";   
-       }
+        var vpGui = gui.addFolder("\xa0 Color Coding Options");
+        gui
+          .add(eddyvariables, "a")
+          .name("Temperature")
+          .listen()
+          .onChange(function () {
+            setVariable("a");
+          });
+        gui
+          .add(eddyvariables, "b")
+          .name("Salinity")
+          .listen()
+          .onChange(function () {
+            setVariable("b");
+          });
+        gui
+          .add(eddyvariables, "c")
+          .name("Speed")
+          .listen()
+          .onChange(function () {
+            setVariable("c");
+          });
 
-	//else
-	//{
-	//	console.log("spin not set");
-	//}
-       
-       distance = 0, eddy_num = 0;
-           	  
-       for (var i=4; i<inputlines.length; i++)
-       {
-           var thisline = inputlines[i];
-           var vectors = thisline.split(" ");
-              	          	               	                	  
-           if ( vectors.length == 3 && parseInt(vectors[0])==155 && parseInt(vectors[1])==155 )
-           { 
-           	  eddy_num++;                 	
-              var verticecolor_red = [], verticecolor_green = [], verticecolor_blue = [];
+        var ifGui = gui.addFolder("\xa0 Information of the Selected Eddy");
+        gui.add(eddypro, "Depth", eddypro["Depth"]);
+        gui.add(eddypro, "Radius", eddypro["Radius"]);
+        gui.add(eddypro, "Volume", eddypro["Volume"]);
 
-              i++;              	    
-              thisline = inputlines[i];              	    
-              var vectors1 = thisline.split(" ");              	    
+        gui.__ul.childNodes[0].childNodes[0].childNodes[0].classList +=
+          " full_width";
+        gui.__ul.childNodes[1].childNodes[0].childNodes[0].classList +=
+          " full_width";
+
+        scene2 = new THREE.Scene();
+        renderer2 = new THREE.WebGLRenderer({ alpha: true });
+        renderer2.setClearColor(0xffffff, 0.0);
+        renderer2.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        container2 = document.getElementById("inset");
+        container2.appendChild(renderer2.domElement);
+
+        window.addEventListener("resize", onWindowResize, false);
+      }
+
+      function readcolorfile(colorfile, sign) {
+        if (sign == 3) {
+          temparray3 = [
+            0.0, 0.0039, 0.0078, 0.0118, 0.0157, 0.0196, 0.0235, 0.0275, 0.0314,
+            0.0353, 0.0392, 0.0431, 0.0471, 0.051, 0.0549, 0.0588, 0.0627,
+            0.0667, 0.0706, 0.0745, 0.0784, 0.0824, 0.0863, 0.0902, 0.0941,
+            0.098, 0.102, 0.1059, 0.1098, 0.1137, 0.1176, 0.1216, 0.1255,
+            0.1294, 0.1333, 0.1373, 0.1412, 0.1451, 0.149, 0.1529, 0.1569,
+            0.1608, 0.1647, 0.1686, 0.1725, 0.1765, 0.1804, 0.1843, 0.1882,
+            0.1922, 0.1961, 0.2, 0.2039, 0.2078, 0.2118, 0.2157, 0.2196, 0.2235,
+            0.2275, 0.2314, 0.2353, 0.2392, 0.2431, 0.2471, 0.251, 0.2549,
+            0.2588, 0.2627, 0.2667, 0.2706, 0.2745, 0.2784, 0.2824, 0.2863,
+            0.2902, 0.2941, 0.298, 0.302, 0.3059, 0.3098, 0.3137, 0.3176,
+            0.3216, 0.3255, 0.3294, 0.3333, 0.3373, 0.3412, 0.3451, 0.349,
+            0.3529, 0.3569, 0.3608, 0.3647, 0.3686, 0.3725, 0.3765, 0.3804,
+            0.3843, 0.3882, 0.3922, 0.3961, 0.4, 0.4039, 0.4078, 0.4118, 0.4157,
+            0.4196, 0.4235, 0.4275, 0.4314, 0.4353, 0.4392, 0.4431, 0.4471,
+            0.451, 0.4549, 0.4588, 0.4627, 0.4667, 0.4706, 0.4745, 0.4784,
+            0.4824, 0.4863, 0.4902, 0.4941, 0.498, 0.502, 0.5059, 0.5098,
+            0.5137, 0.5176, 0.5216, 0.5255, 0.5294, 0.5333, 0.5373, 0.5412,
+            0.5451, 0.549, 0.5529, 0.5569, 0.5608, 0.5647, 0.5686, 0.5725,
+            0.5765, 0.5804, 0.5843, 0.5882, 0.5922, 0.5961, 0.6, 0.6039, 0.6078,
+            0.6118, 0.6157, 0.6196, 0.6235, 0.6275, 0.6314, 0.6353, 0.6392,
+            0.6431, 0.6471, 0.651, 0.6549, 0.6588, 0.6627, 0.6667, 0.6706,
+            0.6745, 0.6784, 0.6824, 0.6863, 0.6902, 0.6941, 0.698, 0.702,
+            0.7059, 0.7098, 0.7137, 0.7176, 0.7216, 0.7255, 0.7294, 0.7333,
+            0.7373, 0.7412, 0.7451, 0.749, 0.7529, 0.7569, 0.7608, 0.7647,
+            0.7686, 0.7725, 0.7765, 0.7804, 0.7843, 0.7882, 0.7922, 0.7961, 0.8,
+            0.8039, 0.8078, 0.8118, 0.8157, 0.8196, 0.8235, 0.8275, 0.8314,
+            0.8353, 0.8392, 0.8431, 0.8471, 0.851, 0.8549, 0.8588, 0.8627,
+            0.8667, 0.8706, 0.8745, 0.8784, 0.8824, 0.8863, 0.8902, 0.8941,
+            0.898, 0.902, 0.9059, 0.9098, 0.9137, 0.9176, 0.9216, 0.9255,
+            0.9294, 0.9333, 0.9373, 0.9412, 0.9451, 0.949, 0.9529, 0.9569,
+            0.9608, 0.9647, 0.9686, 0.9725, 0.9765, 0.9804, 0.9843, 0.9882,
+            0.9922, 0.9961, 1.0,
+          ];
+          redarray3 = [
+            0.0, 0.0078, 0.0156, 0.0234, 0.0313, 0.0391, 0.0469, 0.0547, 0.0625,
+            0.0703, 0.0781, 0.0859, 0.0938, 0.1016, 0.1094, 0.1172, 0.125,
+            0.1328, 0.1406, 0.1484, 0.1563, 0.1641, 0.1719, 0.1797, 0.1875,
+            0.1953, 0.2031, 0.2109, 0.2188, 0.2266, 0.2344, 0.2422, 0.25,
+            0.2578, 0.2656, 0.2734, 0.2813, 0.2891, 0.2969, 0.3047, 0.3125,
+            0.3203, 0.3242, 0.332, 0.3398, 0.3477, 0.3555, 0.3633, 0.3711,
+            0.3789, 0.3867, 0.3945, 0.4023, 0.4102, 0.418, 0.4258, 0.4336,
+            0.4414, 0.4492, 0.457, 0.4649, 0.4727, 0.4805, 0.4883, 0.4961,
+            0.5039, 0.5117, 0.5195, 0.5273, 0.5351, 0.543, 0.5508, 0.5586,
+            0.5664, 0.5742, 0.582, 0.5898, 0.5977, 0.6055, 0.6133, 0.6211,
+            0.6289, 0.6367, 0.6445, 0.6523, 0.6602, 0.668, 0.6797, 0.6875,
+            0.6953, 0.7031, 0.7109, 0.7187, 0.7266, 0.7344, 0.7422, 0.75,
+            0.7578, 0.7656, 0.7734, 0.7812, 0.7891, 0.7969, 0.8047, 0.8125,
+            0.8203, 0.8281, 0.8359, 0.8437, 0.8516, 0.8594, 0.8672, 0.875,
+            0.8828, 0.8906, 0.8984, 0.9062, 0.9141, 0.9219, 0.9297, 0.9375,
+            0.9453, 0.9531, 0.9609, 0.9688, 0.9766, 0.9844, 0.9922, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+          ];
+          greenarray3 = [
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0078, 0.0156, 0.0234, 0.0352, 0.043, 0.0508, 0.0547, 0.0664,
+            0.0703, 0.0781, 0.0859, 0.0977, 0.1055, 0.1133, 0.1211, 0.1289,
+            0.1328, 0.1445, 0.1523, 0.1563, 0.1641, 0.1719, 0.1836, 0.1914,
+            0.1992, 0.2031, 0.2109, 0.2227, 0.2305, 0.2383, 0.2461, 0.25,
+            0.2578, 0.2656, 0.2734, 0.2852, 0.293, 0.3008, 0.3086, 0.3164,
+            0.3242, 0.3281, 0.3398, 0.3477, 0.3555, 0.3633, 0.3672, 0.3789,
+            0.3828, 0.3906, 0.3984, 0.4102, 0.418, 0.4258, 0.4336, 0.4414,
+            0.4492, 0.4531, 0.4609, 0.4727, 0.4766, 0.4883, 0.4922, 0.5039,
+            0.5117, 0.5156, 0.5234, 0.5312, 0.5391, 0.5508, 0.5586, 0.5664,
+            0.5742, 0.582, 0.5898, 0.5977, 0.6055, 0.6133, 0.6211, 0.6289,
+            0.6367, 0.6445, 0.6523, 0.6602, 0.668, 0.6758, 0.6836, 0.6914,
+            0.6992, 0.707, 0.7148, 0.7227, 0.7305, 0.7383, 0.7461, 0.7539,
+            0.7617, 0.7695, 0.7773, 0.7852, 0.793, 0.8008, 0.8086, 0.8164,
+            0.8242, 0.832, 0.8398, 0.8477, 0.8555, 0.8633, 0.8711, 0.8789,
+            0.8867, 0.8945, 0.9023, 0.9102, 0.918, 0.9258, 0.9297, 0.9414,
+            0.9453, 0.957, 0.9648, 0.9727, 0.9805, 0.9883, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+            0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961, 0.9961,
+          ];
+          bluearray3 = [
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922, 0.4922,
+            0.4922, 0.4922, 0.4922, 0.4883, 0.4883, 0.4883, 0.4883, 0.4883,
+            0.4883, 0.4883, 0.4883, 0.4883, 0.4883, 0.4883, 0.4883, 0.4883,
+            0.4922, 0.4961, 0.5, 0.5039, 0.5078, 0.5117, 0.5195, 0.5234, 0.5273,
+            0.5312, 0.5351, 0.5391, 0.543, 0.5469, 0.5508, 0.5547, 0.5586,
+            0.5664, 0.5703, 0.5742, 0.5781, 0.582, 0.5859, 0.5898, 0.5937,
+            0.5977, 0.6016, 0.6055, 0.6133, 0.6172, 0.6211, 0.625, 0.6289,
+            0.6328, 0.6367, 0.6406, 0.6445, 0.6484, 0.6523, 0.6602, 0.6641,
+            0.668, 0.6719, 0.6758, 0.6797, 0.6836, 0.6875, 0.6914, 0.6953,
+            0.6992, 0.707, 0.7109, 0.7148, 0.7187, 0.7227, 0.7266, 0.7305,
+            0.7344, 0.7383, 0.7422, 0.7461, 0.7539, 0.7578, 0.7617,
+          ];
+        } else if (sign == 2) {
+          temparray2 = [
+            0.0, 0.007874, 0.015748, 0.023622, 0.031496, 0.03937, 0.047244,
+            0.055118, 0.062992, 0.070866, 0.07874, 0.086614, 0.094488, 0.102362,
+            0.110236, 0.11811, 0.125984, 0.133858, 0.141732, 0.149606, 0.15748,
+            0.165354, 0.173228, 0.181102, 0.188976, 0.19685, 0.204724, 0.212598,
+            0.220472, 0.228346, 0.23622, 0.244094, 0.251969, 0.259843, 0.267717,
+            0.275591, 0.283465, 0.291339, 0.299213, 0.307087, 0.314961,
+            0.322835, 0.330709, 0.338583, 0.346457, 0.354331, 0.362205,
+            0.370079, 0.377953, 0.385827, 0.393701, 0.401575, 0.409449,
+            0.417323, 0.425197, 0.433071, 0.440945, 0.448819, 0.456693,
+            0.464567, 0.472441, 0.480315, 0.488189, 0.496063, 0.503937,
+            0.511811, 0.519685, 0.527559, 0.535433, 0.543307, 0.551181,
+            0.559055, 0.566929, 0.574803, 0.582677, 0.590551, 0.598425,
+            0.606299, 0.614173, 0.622047, 0.629921, 0.637795, 0.645669,
+            0.653543, 0.661417, 0.669291, 0.677165, 0.685039, 0.692913,
+            0.700787, 0.708661, 0.716535, 0.724409, 0.732283, 0.740157,
+            0.748031, 0.755906, 0.76378, 0.771654, 0.779528, 0.787402, 0.795276,
+            0.80315, 0.811024, 0.818898, 0.826772, 0.834646, 0.84252, 0.850394,
+            0.858268, 0.866142, 0.874016, 0.88189, 0.889764, 0.897638, 0.905512,
+            0.913386, 0.92126, 0.929134, 0.937008, 0.944882, 0.952756, 0.96063,
+            0.968504, 0.976378, 0.984252, 0.992126, 1.0,
+          ];
+          redarray2 = [
+            0.0, 0.0887312, 0.12549, 0.153689, 0.177478, 0.198413, 0.21735,
+            0.234775, 0.25098, 0.266209, 0.280613, 0.294301, 0.307393, 0.319936,
+            0.332021, 0.343679, 0.35494, 0.365866, 0.376471, 0.386786, 0.396841,
+            0.406638, 0.416205, 0.425559, 0.434714, 0.443671, 0.452461,
+            0.461082, 0.469551, 0.477852, 0.48603, 0.494057, 0.501961, 0.509743,
+            0.517418, 0.524971, 0.532418, 0.539757, 0.547005, 0.554147,
+            0.561212, 0.568185, 0.575067, 0.581872, 0.588602, 0.595254,
+            0.601831, 0.608347, 0.614786, 0.621149, 0.627451, 0.633692,
+            0.639887, 0.646006, 0.652064, 0.658076, 0.664042, 0.669932,
+            0.675792, 0.68159, 0.687343, 0.69305, 0.698711, 0.704311, 0.70988,
+            0.715404, 0.720897, 0.726329, 0.731731, 0.737087, 0.742412,
+            0.747707, 0.752941, 0.75816, 0.763333, 0.768475, 0.773571, 0.778653,
+            0.783688, 0.788693, 0.793683, 0.798627, 0.80354, 0.808423, 0.813275,
+            0.818097, 0.822904, 0.827665, 0.83241, 0.837125, 0.841825, 0.846479,
+            0.851118, 0.855741, 0.860319, 0.864881, 0.869429, 0.873945,
+            0.878431, 0.882902, 0.887358, 0.891783, 0.896193, 0.900572,
+            0.904936, 0.90927, 0.913588, 0.917891, 0.922164, 0.926421, 0.930663,
+            0.93489, 0.939086, 0.943267, 0.947433, 0.951583, 0.955718, 0.959823,
+            0.963912, 0.967987, 0.972045, 0.976089, 0.980117, 0.984131,
+            0.988113, 0.992096, 0.996048, 1.0,
+          ];
+          greenarray2 = [
+            0.0, 0.0, 0.0, 0.000015259, 0.000030518, 0.0000610361, 0.000106813,
+            0.000167849, 0.000244144, 0.000350958, 0.000488289, 0.000656138,
+            0.000839246, 0.00106813, 0.00134279, 0.00164797, 0.00199893,
+            0.00239567, 0.00285344, 0.00334173, 0.00390631, 0.00451667,
+            0.00520333, 0.00593576, 0.00674449, 0.00762951, 0.00857557,
+            0.00961318, 0.0107118, 0.011902, 0.0131838, 0.0145418, 0.0159915,
+            0.0175479, 0.0191806, 0.0209354, 0.0227817, 0.0247349, 0.0267948,
+            0.0289616, 0.0312505, 0.0336461, 0.0361639, 0.038819, 0.0415808,
+            0.04448, 0.0475166, 0.0506905, 0.0539864, 0.057435, 0.0610208,
+            0.0647593, 0.0686503, 0.0726787, 0.076875, 0.0812238, 0.0857404,
+            0.0904097, 0.0952468, 0.100267, 0.105455, 0.110811, 0.11635,
+            0.122072, 0.127977, 0.134066, 0.140352, 0.146822, 0.153506,
+            0.160372, 0.167453, 0.174731, 0.182223, 0.189914, 0.197833,
+            0.205951, 0.214298, 0.222873, 0.231678, 0.240696, 0.249958,
+            0.259449, 0.269169, 0.279149, 0.289357, 0.299809, 0.310521,
+            0.321477, 0.332692, 0.344152, 0.355886, 0.36788, 0.380148, 0.392676,
+            0.405478, 0.418555, 0.431922, 0.445563, 0.45948, 0.473686, 0.488197,
+            0.502983, 0.518074, 0.533455, 0.549142, 0.565148, 0.581445,
+            0.598047, 0.614984, 0.632227, 0.649775, 0.667659, 0.685878,
+            0.704402, 0.723278, 0.742473, 0.76202, 0.781888, 0.802106, 0.822675,
+            0.843595, 0.864851, 0.886473, 0.908461, 0.9308, 0.953491, 0.976562,
+            1.0,
+          ];
+          bluearray2 = [
+            0.0, 0.0494545, 0.0987869, 0.147875, 0.196612, 0.244862, 0.2925,
+            0.339437, 0.385534, 0.430701, 0.4748, 0.517739, 0.559426, 0.599725,
+            0.63856, 0.675837, 0.711467, 0.745342, 0.777401, 0.807568, 0.835737,
+            0.861875, 0.885893, 0.907759, 0.927398, 0.944762, 0.959808,
+            0.972519, 0.982834, 0.990753, 0.996262, 0.999313, 0.999924,
+            0.998093, 0.993805, 0.987106, 0.977981, 0.966461, 0.952575,
+            0.936355, 0.917845, 0.897108, 0.874159, 0.849073, 0.821897,
+            0.792721, 0.761608, 0.728634, 0.693874, 0.657404, 0.619333,
+            0.579751, 0.53875, 0.496422, 0.452888, 0.40824, 0.3626, 0.31606,
+            0.268757, 0.220798, 0.17229, 0.123369, 0.0741436, 0.0247349, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+          ];
+        } else if (sign == 1) {
+          temparray1 = [
+            0.0, 0.007874, 0.015748, 0.023622, 0.031496, 0.03937, 0.047244,
+            0.055118, 0.062992, 0.070866, 0.07874, 0.086614, 0.094488, 0.102362,
+            0.110236, 0.11811, 0.125984, 0.133858, 0.141732, 0.149606, 0.15748,
+            0.165354, 0.173228, 0.181102, 0.188976, 0.19685, 0.204724, 0.212598,
+            0.220472, 0.228346, 0.23622, 0.244094, 0.251969, 0.259843, 0.267717,
+            0.275591, 0.283465, 0.291339, 0.299213, 0.307087, 0.314961,
+            0.322835, 0.330709, 0.338583, 0.346457, 0.354331, 0.362205,
+            0.370079, 0.377953, 0.385827, 0.393701, 0.401575, 0.409449,
+            0.417323, 0.425197, 0.433071, 0.440945, 0.448819, 0.456693,
+            0.464567, 0.472441, 0.480315, 0.488189, 0.496063, 0.503937,
+            0.511811, 0.519685, 0.527559, 0.535433, 0.543307, 0.551181,
+            0.559055, 0.566929, 0.574803, 0.582677, 0.590551, 0.598425,
+            0.606299, 0.614173, 0.622047, 0.629921, 0.637795, 0.645669,
+            0.653543, 0.661417, 0.669291, 0.677165, 0.685039, 0.692913,
+            0.700787, 0.708661, 0.716535, 0.724409, 0.732283, 0.740157,
+            0.748031, 0.755906, 0.76378, 0.771654, 0.779528, 0.787402, 0.795276,
+            0.80315, 0.811024, 0.818898, 0.826772, 0.834646, 0.84252, 0.850394,
+            0.858268, 0.866142, 0.874016, 0.88189, 0.889764, 0.897638, 0.905512,
+            0.913386, 0.92126, 0.929134, 0.937008, 0.944882, 0.952756, 0.96063,
+            0.968504, 0.976378, 0.984252, 0.992126, 1.0, 0.0, 0.0039216,
+            0.0078431, 0.011765, 0.015686, 0.019608, 0.023529, 0.027451,
+            0.031373, 0.035294, 0.039216, 0.043137, 0.047059, 0.05098, 0.054902,
+            0.058824, 0.062745, 0.066667, 0.070588, 0.07451, 0.078431, 0.082353,
+            0.086275, 0.090196, 0.094118, 0.098039, 0.10196, 0.10588, 0.1098,
+            0.11373, 0.11765, 0.12157, 0.12549, 0.12941, 0.13333, 0.13725,
+            0.14118, 0.1451, 0.14902, 0.15294, 0.15686, 0.16078, 0.16471,
+            0.16863, 0.17255, 0.17647, 0.18039, 0.18431, 0.18824, 0.19216,
+            0.19608, 0.2, 0.20392, 0.20784, 0.21176, 0.21569, 0.21961, 0.22353,
+            0.22745, 0.23137, 0.23529, 0.23922, 0.24314, 0.24706, 0.25098,
+            0.2549, 0.25882, 0.26275, 0.26667, 0.27059, 0.27451, 0.27843,
+            0.28235, 0.28627, 0.2902, 0.29412, 0.29804, 0.30196, 0.30588,
+            0.3098, 0.31373, 0.31765, 0.32157, 0.32549, 0.32941, 0.33333,
+            0.33725, 0.34118, 0.3451, 0.34902, 0.35294, 0.35686, 0.36078,
+            0.36471, 0.36863, 0.37255, 0.37647, 0.38039, 0.38431, 0.38824,
+            0.39216, 0.39608, 0.4, 0.40392, 0.40784, 0.41176, 0.41569, 0.41961,
+            0.42353, 0.42745, 0.43137, 0.43529, 0.43922, 0.44314, 0.44706,
+            0.45098, 0.4549, 0.45882, 0.46275, 0.46667, 0.47059, 0.47451,
+            0.47843, 0.48235, 0.48627, 0.4902, 0.49412, 0.49804, 0.50196,
+            0.50588, 0.5098, 0.51373, 0.51765, 0.52157, 0.52549, 0.52941,
+            0.53333, 0.53725, 0.54118, 0.5451, 0.54902, 0.55294, 0.55686,
+            0.56078, 0.56471, 0.56863, 0.57255, 0.57647, 0.58039, 0.58431,
+            0.58824, 0.59216, 0.59608, 0.6, 0.60392, 0.60784, 0.61176, 0.61569,
+            0.61961, 0.62353, 0.62745, 0.63137, 0.63529, 0.63922, 0.64314,
+            0.64706, 0.65098, 0.6549, 0.65882, 0.66275, 0.66667, 0.67059,
+            0.67451, 0.67843, 0.68235, 0.68627, 0.6902, 0.69412, 0.69804,
+            0.70196, 0.70588, 0.7098, 0.71373, 0.71765, 0.72157, 0.72549,
+            0.72941, 0.73333, 0.73725, 0.74118, 0.7451, 0.74902, 0.75294,
+            0.75686, 0.76078, 0.76471, 0.76863, 0.77255, 0.77647, 0.78039,
+            0.78431, 0.78824, 0.79216, 0.79608, 0.8, 0.80392, 0.80784, 0.81176,
+            0.81569, 0.81961, 0.82353, 0.82745, 0.83137, 0.83529, 0.83922,
+            0.84314, 0.84706, 0.85098, 0.8549, 0.85882, 0.86275, 0.86667,
+            0.87059, 0.87451, 0.87843, 0.88235, 0.88627, 0.8902, 0.89412,
+            0.89804, 0.90196, 0.90588, 0.9098, 0.91373, 0.91765, 0.92157,
+            0.92549, 0.92941, 0.93333, 0.93725, 0.94118, 0.9451, 0.94902,
+            0.95294, 0.95686, 0.96078, 0.96471, 0.96863, 0.97255, 0.97647,
+            0.98039, 0.98431, 0.98824, 0.99216, 0.99608, 1.0,
+          ];
+          redarray1 = [
+            0.0, 0.0887312, 0.12549, 0.153689, 0.177478, 0.198413, 0.21735,
+            0.234775, 0.25098, 0.266209, 0.280613, 0.294301, 0.307393, 0.319936,
+            0.332021, 0.343679, 0.35494, 0.365866, 0.376471, 0.386786, 0.396841,
+            0.406638, 0.416205, 0.425559, 0.434714, 0.443671, 0.452461,
+            0.461082, 0.469551, 0.477852, 0.48603, 0.494057, 0.501961, 0.509743,
+            0.517418, 0.524971, 0.532418, 0.539757, 0.547005, 0.554147,
+            0.561212, 0.568185, 0.575067, 0.581872, 0.588602, 0.595254,
+            0.601831, 0.608347, 0.614786, 0.621149, 0.627451, 0.633692,
+            0.639887, 0.646006, 0.652064, 0.658076, 0.664042, 0.669932,
+            0.675792, 0.68159, 0.687343, 0.69305, 0.698711, 0.704311, 0.70988,
+            0.715404, 0.720897, 0.726329, 0.731731, 0.737087, 0.742412,
+            0.747707, 0.752941, 0.75816, 0.763333, 0.768475, 0.773571, 0.778653,
+            0.783688, 0.788693, 0.793683, 0.798627, 0.80354, 0.808423, 0.813275,
+            0.818097, 0.822904, 0.827665, 0.83241, 0.837125, 0.841825, 0.846479,
+            0.851118, 0.855741, 0.860319, 0.864881, 0.869429, 0.873945,
+            0.878431, 0.882902, 0.887358, 0.891783, 0.896193, 0.900572,
+            0.904936, 0.90927, 0.913588, 0.917891, 0.922164, 0.926421, 0.930663,
+            0.93489, 0.939086, 0.943267, 0.947433, 0.951583, 0.955718, 0.959823,
+            0.963912, 0.967987, 0.972045, 0.976089, 0.980117, 0.984131,
+            0.988113, 0.992096, 0.996048, 1.0, 0.2081, 0.2089, 0.2097, 0.21042,
+            0.21104, 0.2116, 0.212, 0.21228, 0.21244, 0.21246, 0.2123, 0.2119,
+            0.21139, 0.21063, 0.20961, 0.20841, 0.20674, 0.20483, 0.20256,
+            0.19989, 0.19685, 0.1931, 0.18893, 0.18419, 0.17883, 0.17292,
+            0.16598, 0.15827, 0.14974, 0.1403, 0.12975, 0.11795, 0.10536,
+            0.092152, 0.078562, 0.064973, 0.05185, 0.039375, 0.028536, 0.019948,
+            0.013793, 0.0097285, 0.0071085, 0.0056643, 0.0051517, 0.0053915,
+            0.0064025, 0.0079552, 0.0098987, 0.012142, 0.0147, 0.017565,
+            0.020613, 0.023804, 0.027098, 0.030455, 0.033889, 0.037439,
+            0.040964, 0.044352, 0.04755, 0.050518, 0.053364, 0.05609, 0.05868,
+            0.061078, 0.063324, 0.065451, 0.067422, 0.069229, 0.070908,
+            0.072435, 0.073843, 0.075131, 0.076284, 0.077244, 0.077977,
+            0.078586, 0.079076, 0.079415, 0.079495, 0.07935, 0.079026, 0.078452,
+            0.077594, 0.076475, 0.075057, 0.0734, 0.071503, 0.069367, 0.066969,
+            0.064423, 0.061648, 0.058702, 0.05565, 0.052532, 0.049415, 0.046297,
+            0.043247, 0.040303, 0.037426, 0.03499, 0.03286, 0.030996, 0.029371,
+            0.028012, 0.026873, 0.025967, 0.025267, 0.024734, 0.024334,
+            0.024008, 0.023794, 0.023634, 0.023474, 0.023314, 0.023155,
+            0.023047, 0.022967, 0.022875, 0.022715, 0.0227, 0.022962, 0.023394,
+            0.023898, 0.024537, 0.025826, 0.027289, 0.028967, 0.030981,
+            0.033539, 0.036313, 0.039628, 0.043351, 0.047268, 0.051185,
+            0.055745, 0.060228, 0.064875, 0.069911, 0.074947, 0.080125,
+            0.085526, 0.090979, 0.096423, 0.10242, 0.10827, 0.11426, 0.1204,
+            0.12662, 0.13278, 0.13935, 0.14589, 0.15252, 0.15939, 0.16626,
+            0.17321, 0.18036, 0.18758, 0.19475, 0.20235, 0.20994, 0.21758,
+            0.22538, 0.23336, 0.24128, 0.24954, 0.25785, 0.26616, 0.27453,
+            0.28333, 0.29198, 0.30076, 0.30969, 0.31872, 0.32767, 0.3369,
+            0.34612, 0.35532, 0.36454, 0.37397, 0.38326, 0.39258, 0.40194,
+            0.41127, 0.42047, 0.42973, 0.43886, 0.44792, 0.457, 0.46588,
+            0.47475, 0.48353, 0.49221, 0.50083, 0.5093, 0.51778, 0.52611,
+            0.53434, 0.54256, 0.55063, 0.55864, 0.56659, 0.57447, 0.5823,
+            0.59005, 0.59774, 0.60532, 0.61283, 0.62034, 0.62778, 0.63514,
+            0.64245, 0.64972, 0.65699, 0.6641, 0.67121, 0.67828, 0.68532,
+            0.69234, 0.69921, 0.70615, 0.71302, 0.71981, 0.72661, 0.7334,
+            0.74013, 0.7468, 0.75343, 0.76007, 0.7667, 0.77327, 0.77983,
+            0.78636, 0.79283, 0.79931, 0.80572, 0.81216, 0.81861, 0.825,
+            0.83131, 0.83769, 0.84404, 0.85036, 0.85667, 0.86299, 0.86924,
+            0.87547, 0.88173, 0.88804, 0.89419, 0.90041, 0.90665, 0.91286,
+            0.91901, 0.92517,
+          ];
+          greenarray1 = [
+            0.0, 0.0, 0.0, 0.000015259, 0.000030518, 0.0000610361, 0.000106813,
+            0.000167849, 0.000244144, 0.000350958, 0.000488289, 0.000656138,
+            0.000839246, 0.00106813, 0.00134279, 0.00164797, 0.00199893,
+            0.00239567, 0.00285344, 0.00334173, 0.00390631, 0.00451667,
+            0.00520333, 0.00593576, 0.00674449, 0.00762951, 0.00857557,
+            0.00961318, 0.0107118, 0.011902, 0.0131838, 0.0145418, 0.0159915,
+            0.0175479, 0.0191806, 0.0209354, 0.0227817, 0.0247349, 0.0267948,
+            0.0289616, 0.0312505, 0.0336461, 0.0361639, 0.038819, 0.0415808,
+            0.04448, 0.0475166, 0.0506905, 0.0539864, 0.057435, 0.0610208,
+            0.0647593, 0.0686503, 0.0726787, 0.076875, 0.0812238, 0.0857404,
+            0.0904097, 0.0952468, 0.100267, 0.105455, 0.110811, 0.11635,
+            0.122072, 0.127977, 0.134066, 0.140352, 0.146822, 0.153506,
+            0.160372, 0.167453, 0.174731, 0.182223, 0.189914, 0.197833,
+            0.205951, 0.214298, 0.222873, 0.231678, 0.240696, 0.249958,
+            0.259449, 0.269169, 0.279149, 0.289357, 0.299809, 0.310521,
+            0.321477, 0.332692, 0.344152, 0.355886, 0.36788, 0.380148, 0.392676,
+            0.405478, 0.418555, 0.431922, 0.445563, 0.45948, 0.473686, 0.488197,
+            0.502983, 0.518074, 0.533455, 0.549142, 0.565148, 0.581445,
+            0.598047, 0.614984, 0.632227, 0.649775, 0.667659, 0.685878,
+            0.704402, 0.723278, 0.742473, 0.76202, 0.781888, 0.802106, 0.822675,
+            0.843595, 0.864851, 0.886473, 0.908461, 0.9308, 0.953491, 0.976562,
+            1.0, 0.1663, 0.17094, 0.17557, 0.18021, 0.18485, 0.18948, 0.1942,
+            0.19891, 0.20363, 0.20837, 0.21316, 0.21796, 0.22281, 0.22773,
+            0.23269, 0.23764, 0.24268, 0.24771, 0.25283, 0.258, 0.26312,
+            0.26839, 0.27367, 0.27902, 0.28449, 0.29009, 0.29592, 0.30199,
+            0.30826, 0.31475, 0.32154, 0.32865, 0.33588, 0.34308, 0.35014,
+            0.35701, 0.36334, 0.36931, 0.37496, 0.38027, 0.38515, 0.38979,
+            0.3942, 0.39844, 0.40254, 0.40646, 0.41022, 0.41392, 0.41753,
+            0.42103, 0.42447, 0.42783, 0.43113, 0.4344, 0.43766, 0.44086,
+            0.44398, 0.4471, 0.45018, 0.45322, 0.45626, 0.45929, 0.46233,
+            0.46533, 0.46829, 0.47125, 0.47421, 0.47716, 0.48012, 0.48308,
+            0.48604, 0.489, 0.49201, 0.49501, 0.49798, 0.50102, 0.50413, 0.5072,
+            0.5103, 0.5135, 0.5167, 0.51997, 0.52325, 0.52663, 0.53015, 0.53367,
+            0.53726, 0.54096, 0.54476, 0.54859, 0.55243, 0.55641, 0.56041,
+            0.56441, 0.56841, 0.5724, 0.5764, 0.58034, 0.58423, 0.58806, 0.5919,
+            0.59559, 0.59916, 0.60264, 0.60607, 0.60942, 0.61263, 0.61578,
+            0.61886, 0.62187, 0.62475, 0.62756, 0.6303, 0.63299, 0.63561,
+            0.63817, 0.64065, 0.64308, 0.64545, 0.64776, 0.65008, 0.65233,
+            0.65451, 0.65667, 0.65882, 0.6609, 0.66297, 0.66505, 0.6671,
+            0.66909, 0.671, 0.67299, 0.67494, 0.67683, 0.67868, 0.6806, 0.68244,
+            0.68428, 0.68612, 0.68795, 0.68971, 0.69147, 0.69322, 0.69498,
+            0.69673, 0.69841, 0.70009, 0.70177, 0.70345, 0.70511, 0.70671,
+            0.70831, 0.70991, 0.71151, 0.7131, 0.71462, 0.7162, 0.7177, 0.71917,
+            0.72068, 0.72212, 0.72356, 0.725, 0.72638, 0.72767, 0.72902,
+            0.73031, 0.73159, 0.73284, 0.73404, 0.73524, 0.73637, 0.73744,
+            0.73848, 0.73951, 0.74047, 0.74136, 0.74224, 0.74309, 0.74387,
+            0.74451, 0.74515, 0.74574, 0.74627, 0.74675, 0.74723, 0.74757,
+            0.74794, 0.74828, 0.74852, 0.74868, 0.74884, 0.749, 0.7491, 0.74911,
+            0.74919, 0.7492, 0.74915, 0.74907, 0.74899, 0.74891, 0.74877,
+            0.74861, 0.74842, 0.74818, 0.74794, 0.7477, 0.74746, 0.74719,
+            0.74687, 0.74655, 0.74617, 0.74581, 0.74547, 0.74507, 0.74467,
+            0.74427, 0.74382, 0.74337, 0.74296, 0.74248, 0.742, 0.74152,
+            0.74102, 0.74046, 0.73998, 0.73944, 0.73888, 0.73832, 0.73777,
+            0.73729, 0.73668, 0.73608, 0.73552, 0.73496, 0.7344, 0.73384,
+            0.73328, 0.73272, 0.73216, 0.73161, 0.73105, 0.73049, 0.72993,
+            0.72937, 0.72889, 0.72841, 0.72793, 0.72748, 0.72708, 0.72668,
+            0.72634, 0.72607, 0.72583, 0.7256, 0.7256,
+          ];
+          bluearray1 = [
+            0.0, 0.0494545, 0.0987869, 0.147875, 0.196612, 0.244862, 0.2925,
+            0.339437, 0.385534, 0.430701, 0.4748, 0.517739, 0.559426, 0.599725,
+            0.63856, 0.675837, 0.711467, 0.745342, 0.777401, 0.807568, 0.835737,
+            0.861875, 0.885893, 0.907759, 0.927398, 0.944762, 0.959808,
+            0.972519, 0.982834, 0.990753, 0.996262, 0.999313, 0.999924,
+            0.998093, 0.993805, 0.987106, 0.977981, 0.966461, 0.952575,
+            0.936355, 0.917845, 0.897108, 0.874159, 0.849073, 0.821897,
+            0.792721, 0.761608, 0.728634, 0.693874, 0.657404, 0.619333,
+            0.579751, 0.53875, 0.496422, 0.452888, 0.40824, 0.3626, 0.31606,
+            0.268757, 0.220798, 0.17229, 0.123369, 0.0741436, 0.0247349, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5292,
+            0.53871, 0.54823, 0.55778, 0.56739, 0.57706, 0.58673, 0.59641,
+            0.60612, 0.61589, 0.62572, 0.63556, 0.64545, 0.65536, 0.66527,
+            0.67518, 0.68517, 0.69517, 0.7052, 0.71527, 0.72534, 0.73541,
+            0.74549, 0.7556, 0.76577, 0.776, 0.78623, 0.79641, 0.8066, 0.81675,
+            0.82667, 0.83611, 0.84496, 0.85303, 0.86016, 0.86623, 0.87091,
+            0.87468, 0.87767, 0.87993, 0.88145, 0.88243, 0.88304, 0.88334,
+            0.88335, 0.88311, 0.88264, 0.88199, 0.88119, 0.8803, 0.87934,
+            0.87822, 0.87699, 0.87571, 0.8744, 0.87296, 0.87152, 0.87003,
+            0.86847, 0.86687, 0.86528, 0.86368, 0.86202, 0.86031, 0.85856,
+            0.85689, 0.85513, 0.85343, 0.85171, 0.84996, 0.8482, 0.84651,
+            0.84483, 0.84316, 0.84149, 0.83989, 0.8383, 0.83675, 0.83527,
+            0.83384, 0.83249, 0.8312, 0.82998, 0.82885, 0.82785, 0.82705,
+            0.82633, 0.82566, 0.82509, 0.82464, 0.82432, 0.824, 0.82379, 0.8236,
+            0.82336, 0.82312, 0.82288, 0.82253, 0.8221, 0.82159, 0.82095,
+            0.82009, 0.81916, 0.8181, 0.81687, 0.81551, 0.81401, 0.81238,
+            0.81064, 0.80877, 0.80677, 0.80463, 0.80236, 0.80001, 0.79759,
+            0.79503, 0.79247, 0.78976, 0.78696, 0.78415, 0.78127, 0.77832,
+            0.77531, 0.77224, 0.76911, 0.76591, 0.76264, 0.75937, 0.75606,
+            0.7527, 0.74934, 0.74584, 0.74232, 0.73881, 0.73528, 0.73168,
+            0.72801, 0.72434, 0.7206, 0.71677, 0.71301, 0.70918, 0.7053,
+            0.70135, 0.69735, 0.69335, 0.68929, 0.68521, 0.6811, 0.67695,
+            0.67279, 0.66849, 0.66423, 0.65993, 0.65554, 0.65122, 0.64677,
+            0.64229, 0.63778, 0.63323, 0.62867, 0.62405, 0.61941, 0.61477,
+            0.61013, 0.60541, 0.60062, 0.59588, 0.59113, 0.58634, 0.58154,
+            0.57674, 0.57195, 0.56718, 0.56245, 0.55766, 0.553, 0.54831,
+            0.54366, 0.5391, 0.53454, 0.53006, 0.52568, 0.52136, 0.51706,
+            0.5129, 0.50881, 0.50474, 0.50072, 0.49681, 0.49297, 0.4892,
+            0.48549, 0.48184, 0.47825, 0.47465, 0.47119, 0.46775, 0.46434,
+            0.46098, 0.45763, 0.4544, 0.45116, 0.44794, 0.44482, 0.4417,
+            0.43865, 0.43557, 0.4325, 0.42954, 0.42659, 0.42363, 0.42072,
+            0.41784, 0.41496, 0.41209, 0.40927, 0.40648, 0.40368, 0.40088,
+            0.39808, 0.39535, 0.39263, 0.38992, 0.3872, 0.38448, 0.38176,
+            0.37909, 0.37643, 0.37371, 0.37108, 0.36844, 0.36575, 0.36306,
+            0.36042, 0.35779, 0.35508, 0.35241, 0.34975, 0.34703, 0.34431,
+            0.34159, 0.33888, 0.33616, 0.33343, 0.33055, 0.32774, 0.3249,
+            0.32202, 0.31914, 0.31618, 0.31309, 0.30998, 0.30683, 0.30363,
+            0.30027,
+          ];
+        } else if (sign == 0) {
+          temparray0 = [
+            0.0, 0.007874, 0.015748, 0.023622, 0.031496, 0.03937, 0.047244,
+            0.055118, 0.062992, 0.070866, 0.07874, 0.086614, 0.094488, 0.102362,
+            0.110236, 0.11811, 0.125984, 0.133858, 0.141732, 0.149606, 0.15748,
+            0.165354, 0.173228, 0.181102, 0.188976, 0.19685, 0.204724, 0.212598,
+            0.220472, 0.228346, 0.23622, 0.244094, 0.251969, 0.259843, 0.267717,
+            0.275591, 0.283465, 0.291339, 0.299213, 0.307087, 0.314961,
+            0.322835, 0.330709, 0.338583, 0.346457, 0.354331, 0.362205,
+            0.370079, 0.377953, 0.385827, 0.393701, 0.401575, 0.409449,
+            0.417323, 0.425197, 0.433071, 0.440945, 0.448819, 0.456693,
+            0.464567, 0.472441, 0.480315, 0.488189, 0.496063, 0.503937,
+            0.511811, 0.519685, 0.527559, 0.535433, 0.543307, 0.551181,
+            0.559055, 0.566929, 0.574803, 0.582677, 0.590551, 0.598425,
+            0.606299, 0.614173, 0.622047, 0.629921, 0.637795, 0.645669,
+            0.653543, 0.661417, 0.669291, 0.677165, 0.685039, 0.692913,
+            0.700787, 0.708661, 0.716535, 0.724409, 0.732283, 0.740157,
+            0.748031, 0.755906, 0.76378, 0.771654, 0.779528, 0.787402, 0.795276,
+            0.80315, 0.811024, 0.818898, 0.826772, 0.834646, 0.84252, 0.850394,
+            0.858268, 0.866142, 0.874016, 0.88189, 0.889764, 0.897638, 0.905512,
+            0.913386, 0.92126, 0.929134, 0.937008, 0.944882, 0.952756, 0.96063,
+            0.968504, 0.976378, 0.984252, 0.992126, 1.0, 0.0, 0.0039216,
+            0.0078431, 0.011765, 0.015686, 0.019608, 0.023529, 0.027451,
+            0.031373, 0.035294, 0.039216, 0.043137, 0.047059, 0.05098, 0.054902,
+            0.058824, 0.062745, 0.066667, 0.070588, 0.07451, 0.078431, 0.082353,
+            0.086275, 0.090196, 0.094118, 0.098039, 0.10196, 0.10588, 0.1098,
+            0.11373, 0.11765, 0.12157, 0.12549, 0.12941, 0.13333, 0.13725,
+            0.14118, 0.1451, 0.14902, 0.15294, 0.15686, 0.16078, 0.16471,
+            0.16863, 0.17255, 0.17647, 0.18039, 0.18431, 0.18824, 0.19216,
+            0.19608, 0.2, 0.20392, 0.20784, 0.21176, 0.21569, 0.21961, 0.22353,
+            0.22745, 0.23137, 0.23529, 0.23922, 0.24314, 0.24706, 0.25098,
+            0.2549, 0.25882, 0.26275, 0.26667, 0.27059, 0.27451, 0.27843,
+            0.28235, 0.28627, 0.2902, 0.29412, 0.29804, 0.30196, 0.30588,
+            0.3098, 0.31373, 0.31765, 0.32157, 0.32549, 0.32941, 0.33333,
+            0.33725, 0.34118, 0.3451, 0.34902, 0.35294, 0.35686, 0.36078,
+            0.36471, 0.36863, 0.37255, 0.37647, 0.38039, 0.38431, 0.38824,
+            0.39216, 0.39608, 0.4, 0.40392, 0.40784, 0.41176, 0.41569, 0.41961,
+            0.42353, 0.42745, 0.43137, 0.43529, 0.43922, 0.44314, 0.44706,
+            0.45098, 0.4549, 0.45882, 0.46275, 0.46667, 0.47059, 0.47451,
+            0.47843, 0.48235, 0.48627, 0.4902, 0.49412, 0.49804, 0.50196,
+            0.50588, 0.5098, 0.51373, 0.51765, 0.52157, 0.52549, 0.52941,
+            0.53333, 0.53725, 0.54118, 0.5451, 0.54902, 0.55294, 0.55686,
+            0.56078, 0.56471, 0.56863, 0.57255, 0.57647, 0.58039, 0.58431,
+            0.58824, 0.59216, 0.59608, 0.6, 0.60392, 0.60784, 0.61176, 0.61569,
+            0.61961, 0.62353, 0.62745, 0.63137, 0.63529, 0.63922, 0.64314,
+            0.64706, 0.65098, 0.6549, 0.65882, 0.66275, 0.66667, 0.67059,
+            0.67451, 0.67843, 0.68235, 0.68627, 0.6902, 0.69412, 0.69804,
+            0.70196, 0.70588, 0.7098, 0.71373, 0.71765, 0.72157, 0.72549,
+            0.72941, 0.73333, 0.73725, 0.74118, 0.7451, 0.74902, 0.75294,
+            0.75686, 0.76078, 0.76471, 0.76863, 0.77255, 0.77647, 0.78039,
+            0.78431, 0.78824, 0.79216, 0.79608, 0.8, 0.80392, 0.80784, 0.81176,
+            0.81569, 0.81961, 0.82353, 0.82745, 0.83137, 0.83529, 0.83922,
+            0.84314, 0.84706, 0.85098, 0.8549, 0.85882, 0.86275, 0.86667,
+            0.87059, 0.87451, 0.87843, 0.88235, 0.88627, 0.8902, 0.89412,
+            0.89804, 0.90196, 0.90588, 0.9098, 0.91373, 0.91765, 0.92157,
+            0.92549, 0.92941, 0.93333, 0.93725, 0.94118, 0.9451, 0.94902,
+            0.95294, 0.95686, 0.96078, 0.96471, 0.96863, 0.97255, 0.97647,
+            0.98039, 0.98431, 0.98824, 0.99216, 0.99608, 1.0, 0.0, 0.003922,
+            0.007843, 0.011765, 0.015686, 0.019608, 0.023529, 0.027451,
+            0.031373, 0.035294, 0.039216, 0.043137, 0.047059, 0.05098, 0.054902,
+            0.058824, 0.062745, 0.066667, 0.070588, 0.07451, 0.078431, 0.082353,
+            0.086275, 0.090196, 0.094118, 0.098039, 0.10196, 0.10588, 0.1098,
+            0.11373, 0.11765, 0.12157, 0.12549, 0.12941, 0.13333, 0.13725,
+            0.14118, 0.1451, 0.14902, 0.15294, 0.15686, 0.16078, 0.16471,
+            0.16863, 0.17255, 0.17647, 0.18039, 0.18431, 0.18824, 0.19216,
+            0.19608, 0.2, 0.20392, 0.20784, 0.21177, 0.21569, 0.21961, 0.22353,
+            0.22745, 0.23137, 0.23529, 0.23922, 0.24314, 0.24706, 0.25098,
+            0.2549, 0.25882, 0.26275, 0.26667, 0.27059, 0.27451, 0.27843,
+            0.28235, 0.28628, 0.2902, 0.29412, 0.29804, 0.30196, 0.30588,
+            0.3098, 0.31372, 0.31765, 0.32157, 0.32549, 0.32941, 0.33333,
+            0.33726, 0.34118, 0.3451, 0.34902, 0.35294, 0.35686, 0.36078,
+            0.36471, 0.36863, 0.37255, 0.37647, 0.38039, 0.38431, 0.38823,
+            0.39216, 0.39608, 0.4, 0.40392, 0.40784, 0.41176, 0.41569, 0.41961,
+            0.42353, 0.42745, 0.43137, 0.43529, 0.43922, 0.44314, 0.44706,
+            0.45098, 0.4549, 0.45882, 0.46275, 0.46667, 0.47059, 0.47451,
+            0.47843, 0.48235, 0.48628, 0.4902, 0.49412, 0.49804, 0.50196,
+            0.50588, 0.5098, 0.51372, 0.51765, 0.52157, 0.52549, 0.52941,
+            0.53333, 0.53726, 0.54118, 0.5451, 0.54902, 0.55294, 0.55686,
+            0.56078, 0.56471, 0.56863, 0.57255, 0.57647, 0.58039, 0.58431,
+            0.58823, 0.59216, 0.59608, 0.6, 0.60392, 0.60784, 0.61177, 0.61569,
+            0.61961, 0.62353, 0.62745, 0.63137, 0.63529, 0.63922, 0.64314,
+            0.64706, 0.65098, 0.6549, 0.65882, 0.66275, 0.66667, 0.67059,
+            0.67451, 0.67843, 0.68235, 0.68627, 0.6902, 0.69412, 0.69804,
+            0.70196, 0.70588, 0.7098, 0.71373, 0.71765, 0.72157, 0.72549,
+            0.72941, 0.73333, 0.73725, 0.74118, 0.7451, 0.74902, 0.75294,
+            0.75686, 0.76078, 0.76471, 0.76863, 0.77255, 0.77647, 0.78039,
+            0.78431, 0.78824, 0.79216, 0.79608, 0.8, 0.80392, 0.80784, 0.81176,
+            0.81569, 0.81961, 0.82353, 0.82745, 0.83137, 0.83529, 0.83922,
+            0.84314, 0.84706, 0.85098, 0.8549, 0.85882, 0.86274, 0.86667,
+            0.87059, 0.87451, 0.87843, 0.88235, 0.88628, 0.8902, 0.89412,
+            0.89804, 0.90196, 0.90588, 0.9098, 0.91373, 0.91765, 0.92157,
+            0.92549, 0.92941, 0.93333, 0.93725, 0.94118, 0.9451, 0.94902,
+            0.95294, 0.95686, 0.96078, 0.96471, 0.96863, 0.97255, 0.97647,
+            0.98039, 0.98431, 0.98823, 0.99216, 0.99608, 1.0,
+          ];
+          redarray0 = [
+            0.0, 0.0887312, 0.12549, 0.153689, 0.177478, 0.198413, 0.21735,
+            0.234775, 0.25098, 0.266209, 0.280613, 0.294301, 0.307393, 0.319936,
+            0.332021, 0.343679, 0.35494, 0.365866, 0.376471, 0.386786, 0.396841,
+            0.406638, 0.416205, 0.425559, 0.434714, 0.443671, 0.452461,
+            0.461082, 0.469551, 0.477852, 0.48603, 0.494057, 0.501961, 0.509743,
+            0.517418, 0.524971, 0.532418, 0.539757, 0.547005, 0.554147,
+            0.561212, 0.568185, 0.575067, 0.581872, 0.588602, 0.595254,
+            0.601831, 0.608347, 0.614786, 0.621149, 0.627451, 0.633692,
+            0.639887, 0.646006, 0.652064, 0.658076, 0.664042, 0.669932,
+            0.675792, 0.68159, 0.687343, 0.69305, 0.698711, 0.704311, 0.70988,
+            0.715404, 0.720897, 0.726329, 0.731731, 0.737087, 0.742412,
+            0.747707, 0.752941, 0.75816, 0.763333, 0.768475, 0.773571, 0.778653,
+            0.783688, 0.788693, 0.793683, 0.798627, 0.80354, 0.808423, 0.813275,
+            0.818097, 0.822904, 0.827665, 0.83241, 0.837125, 0.841825, 0.846479,
+            0.851118, 0.855741, 0.860319, 0.864881, 0.869429, 0.873945,
+            0.878431, 0.882902, 0.887358, 0.891783, 0.896193, 0.900572,
+            0.904936, 0.90927, 0.913588, 0.917891, 0.922164, 0.926421, 0.930663,
+            0.93489, 0.939086, 0.943267, 0.947433, 0.951583, 0.955718, 0.959823,
+            0.963912, 0.967987, 0.972045, 0.976089, 0.980117, 0.984131,
+            0.988113, 0.992096, 0.996048, 1.0, 0.2081, 0.2089, 0.2097, 0.21042,
+            0.21104, 0.2116, 0.212, 0.21228, 0.21244, 0.21246, 0.2123, 0.2119,
+            0.21139, 0.21063, 0.20961, 0.20841, 0.20674, 0.20483, 0.20256,
+            0.19989, 0.19685, 0.1931, 0.18893, 0.18419, 0.17883, 0.17292,
+            0.16598, 0.15827, 0.14974, 0.1403, 0.12975, 0.11795, 0.10536,
+            0.092152, 0.078562, 0.064973, 0.05185, 0.039375, 0.028536, 0.019948,
+            0.013793, 0.0097285, 0.0071085, 0.0056643, 0.0051517, 0.0053915,
+            0.0064025, 0.0079552, 0.0098987, 0.012142, 0.0147, 0.017565,
+            0.020613, 0.023804, 0.027098, 0.030455, 0.033889, 0.037439,
+            0.040964, 0.044352, 0.04755, 0.050518, 0.053364, 0.05609, 0.05868,
+            0.061078, 0.063324, 0.065451, 0.067422, 0.069229, 0.070908,
+            0.072435, 0.073843, 0.075131, 0.076284, 0.077244, 0.077977,
+            0.078586, 0.079076, 0.079415, 0.079495, 0.07935, 0.079026, 0.078452,
+            0.077594, 0.076475, 0.075057, 0.0734, 0.071503, 0.069367, 0.066969,
+            0.064423, 0.061648, 0.058702, 0.05565, 0.052532, 0.049415, 0.046297,
+            0.043247, 0.040303, 0.037426, 0.03499, 0.03286, 0.030996, 0.029371,
+            0.028012, 0.026873, 0.025967, 0.025267, 0.024734, 0.024334,
+            0.024008, 0.023794, 0.023634, 0.023474, 0.023314, 0.023155,
+            0.023047, 0.022967, 0.022875, 0.022715, 0.0227, 0.022962, 0.023394,
+            0.023898, 0.024537, 0.025826, 0.027289, 0.028967, 0.030981,
+            0.033539, 0.036313, 0.039628, 0.043351, 0.047268, 0.051185,
+            0.055745, 0.060228, 0.064875, 0.069911, 0.074947, 0.080125,
+            0.085526, 0.090979, 0.096423, 0.10242, 0.10827, 0.11426, 0.1204,
+            0.12662, 0.13278, 0.13935, 0.14589, 0.15252, 0.15939, 0.16626,
+            0.17321, 0.18036, 0.18758, 0.19475, 0.20235, 0.20994, 0.21758,
+            0.22538, 0.23336, 0.24128, 0.24954, 0.25785, 0.26616, 0.27453,
+            0.28333, 0.29198, 0.30076, 0.30969, 0.31872, 0.32767, 0.3369,
+            0.34612, 0.35532, 0.36454, 0.37397, 0.38326, 0.39258, 0.40194,
+            0.41127, 0.42047, 0.42973, 0.43886, 0.44792, 0.457, 0.46588,
+            0.47475, 0.48353, 0.49221, 0.50083, 0.5093, 0.51778, 0.52611,
+            0.53434, 0.54256, 0.55063, 0.55864, 0.56659, 0.57447, 0.5823,
+            0.59005, 0.59774, 0.60532, 0.61283, 0.62034, 0.62778, 0.63514,
+            0.64245, 0.64972, 0.65699, 0.6641, 0.67121, 0.67828, 0.68532,
+            0.69234, 0.69921, 0.70615, 0.71302, 0.71981, 0.72661, 0.7334,
+            0.74013, 0.7468, 0.75343, 0.76007, 0.7667, 0.77327, 0.77983,
+            0.78636, 0.79283, 0.79931, 0.80572, 0.81216, 0.81861, 0.825,
+            0.83131, 0.83769, 0.84404, 0.85036, 0.85667, 0.86299, 0.86924,
+            0.87547, 0.88173, 0.88804, 0.89419, 0.90041, 0.90665, 0.91286,
+            0.91901, 0.92517, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0078126, 0.015625, 0.023438, 0.035157, 0.042969,
+            0.050782, 0.054688, 0.066407, 0.070314, 0.078126, 0.085939,
+            0.097658, 0.10547, 0.11328, 0.1211, 0.12891, 0.13281, 0.14453,
+            0.15235, 0.15625, 0.16406, 0.17188, 0.1836, 0.19141, 0.19922,
+            0.20313, 0.21094, 0.22266, 0.23047, 0.23828, 0.2461, 0.25, 0.25782,
+            0.26563, 0.27344, 0.28516, 0.29297, 0.30079, 0.3086, 0.31641,
+            0.32422, 0.32813, 0.33985, 0.34766, 0.35547, 0.36329, 0.36719,
+            0.37891, 0.38282, 0.39063, 0.39844, 0.41016, 0.41797, 0.42579,
+            0.4336, 0.44141, 0.44923, 0.45313, 0.46094, 0.47266, 0.47656,
+            0.48827, 0.49219, 0.5039, 0.51173, 0.51562, 0.52345, 0.53124,
+            0.53905, 0.55077, 0.55859, 0.5664, 0.57421, 0.58203, 0.58984,
+            0.59765, 0.60546, 0.61328, 0.62109, 0.6289, 0.63671, 0.64453,
+            0.65234, 0.66015, 0.66796, 0.67578, 0.68359, 0.6914, 0.69921,
+            0.70703, 0.71484, 0.72265, 0.73047, 0.73828, 0.74609, 0.7539,
+            0.76172, 0.76953, 0.77734, 0.78515, 0.79297, 0.80078, 0.80859,
+            0.8164, 0.82422, 0.83203, 0.83984, 0.84765, 0.85547, 0.86328,
+            0.87109, 0.8789, 0.88672, 0.89453, 0.90234, 0.91016, 0.91797,
+            0.92578, 0.92969, 0.94141, 0.94531, 0.95703, 0.96484, 0.97266,
+            0.98047, 0.98828, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609,
+          ];
+          greenarray0 = [
+            0.0, 0.0, 0.0, 0.000015259, 0.000030518, 0.0000610361, 0.000106813,
+            0.000167849, 0.000244144, 0.000350958, 0.000488289, 0.000656138,
+            0.000839246, 0.00106813, 0.00134279, 0.00164797, 0.00199893,
+            0.00239567, 0.00285344, 0.00334173, 0.00390631, 0.00451667,
+            0.00520333, 0.00593576, 0.00674449, 0.00762951, 0.00857557,
+            0.00961318, 0.0107118, 0.011902, 0.0131838, 0.0145418, 0.0159915,
+            0.0175479, 0.0191806, 0.0209354, 0.0227817, 0.0247349, 0.0267948,
+            0.0289616, 0.0312505, 0.0336461, 0.0361639, 0.038819, 0.0415808,
+            0.04448, 0.0475166, 0.0506905, 0.0539864, 0.057435, 0.0610208,
+            0.0647593, 0.0686503, 0.0726787, 0.076875, 0.0812238, 0.0857404,
+            0.0904097, 0.0952468, 0.100267, 0.105455, 0.110811, 0.11635,
+            0.122072, 0.127977, 0.134066, 0.140352, 0.146822, 0.153506,
+            0.160372, 0.167453, 0.174731, 0.182223, 0.189914, 0.197833,
+            0.205951, 0.214298, 0.222873, 0.231678, 0.240696, 0.249958,
+            0.259449, 0.269169, 0.279149, 0.289357, 0.299809, 0.310521,
+            0.321477, 0.332692, 0.344152, 0.355886, 0.36788, 0.380148, 0.392676,
+            0.405478, 0.418555, 0.431922, 0.445563, 0.45948, 0.473686, 0.488197,
+            0.502983, 0.518074, 0.533455, 0.549142, 0.565148, 0.581445,
+            0.598047, 0.614984, 0.632227, 0.649775, 0.667659, 0.685878,
+            0.704402, 0.723278, 0.742473, 0.76202, 0.781888, 0.802106, 0.822675,
+            0.843595, 0.864851, 0.886473, 0.908461, 0.9308, 0.953491, 0.976562,
+            1.0, 0.1663, 0.17094, 0.17557, 0.18021, 0.18485, 0.18948, 0.1942,
+            0.19891, 0.20363, 0.20837, 0.21316, 0.21796, 0.22281, 0.22773,
+            0.23269, 0.23764, 0.24268, 0.24771, 0.25283, 0.258, 0.26312,
+            0.26839, 0.27367, 0.27902, 0.28449, 0.29009, 0.29592, 0.30199,
+            0.30826, 0.31475, 0.32154, 0.32865, 0.33588, 0.34308, 0.35014,
+            0.35701, 0.36334, 0.36931, 0.37496, 0.38027, 0.38515, 0.38979,
+            0.3942, 0.39844, 0.40254, 0.40646, 0.41022, 0.41392, 0.41753,
+            0.42103, 0.42447, 0.42783, 0.43113, 0.4344, 0.43766, 0.44086,
+            0.44398, 0.4471, 0.45018, 0.45322, 0.45626, 0.45929, 0.46233,
+            0.46533, 0.46829, 0.47125, 0.47421, 0.47716, 0.48012, 0.48308,
+            0.48604, 0.489, 0.49201, 0.49501, 0.49798, 0.50102, 0.50413, 0.5072,
+            0.5103, 0.5135, 0.5167, 0.51997, 0.52325, 0.52663, 0.53015, 0.53367,
+            0.53726, 0.54096, 0.54476, 0.54859, 0.55243, 0.55641, 0.56041,
+            0.56441, 0.56841, 0.5724, 0.5764, 0.58034, 0.58423, 0.58806, 0.5919,
+            0.59559, 0.59916, 0.60264, 0.60607, 0.60942, 0.61263, 0.61578,
+            0.61886, 0.62187, 0.62475, 0.62756, 0.6303, 0.63299, 0.63561,
+            0.63817, 0.64065, 0.64308, 0.64545, 0.64776, 0.65008, 0.65233,
+            0.65451, 0.65667, 0.65882, 0.6609, 0.66297, 0.66505, 0.6671,
+            0.66909, 0.671, 0.67299, 0.67494, 0.67683, 0.67868, 0.6806, 0.68244,
+            0.68428, 0.68612, 0.68795, 0.68971, 0.69147, 0.69322, 0.69498,
+            0.69673, 0.69841, 0.70009, 0.70177, 0.70345, 0.70511, 0.70671,
+            0.70831, 0.70991, 0.71151, 0.7131, 0.71462, 0.7162, 0.7177, 0.71917,
+            0.72068, 0.72212, 0.72356, 0.725, 0.72638, 0.72767, 0.72902,
+            0.73031, 0.73159, 0.73284, 0.73404, 0.73524, 0.73637, 0.73744,
+            0.73848, 0.73951, 0.74047, 0.74136, 0.74224, 0.74309, 0.74387,
+            0.74451, 0.74515, 0.74574, 0.74627, 0.74675, 0.74723, 0.74757,
+            0.74794, 0.74828, 0.74852, 0.74868, 0.74884, 0.749, 0.7491, 0.74911,
+            0.74919, 0.7492, 0.74915, 0.74907, 0.74899, 0.74891, 0.74877,
+            0.74861, 0.74842, 0.74818, 0.74794, 0.7477, 0.74746, 0.74719,
+            0.74687, 0.74655, 0.74617, 0.74581, 0.74547, 0.74507, 0.74467,
+            0.74427, 0.74382, 0.74337, 0.74296, 0.74248, 0.742, 0.74152,
+            0.74102, 0.74046, 0.73998, 0.73944, 0.73888, 0.73832, 0.73777,
+            0.73729, 0.73668, 0.73608, 0.73552, 0.73496, 0.7344, 0.73384,
+            0.73328, 0.73272, 0.73216, 0.73161, 0.73105, 0.73049, 0.72993,
+            0.72937, 0.72889, 0.72841, 0.72793, 0.72748, 0.72708, 0.72668,
+            0.72634, 0.72607, 0.72583, 0.7256, 0.7256, 0.0, 0.0078126, 0.015625,
+            0.023438, 0.031251, 0.039063, 0.046876, 0.054688, 0.062501,
+            0.070314, 0.078126, 0.085939, 0.093751, 0.10156, 0.10938, 0.11719,
+            0.125, 0.13281, 0.14063, 0.14844, 0.15625, 0.16406, 0.17188,
+            0.17969, 0.1875, 0.19531, 0.20313, 0.21094, 0.21875, 0.22657,
+            0.23438, 0.24219, 0.25, 0.25782, 0.26563, 0.27344, 0.28125, 0.28907,
+            0.29688, 0.30469, 0.3125, 0.32032, 0.32422, 0.33204, 0.33985,
+            0.34766, 0.35547, 0.36329, 0.3711, 0.37891, 0.38672, 0.39454,
+            0.40235, 0.41016, 0.41797, 0.42579, 0.4336, 0.44141, 0.44923,
+            0.45704, 0.46485, 0.47266, 0.48048, 0.48827, 0.4961, 0.5039,
+            0.51173, 0.51952, 0.52734, 0.53515, 0.54296, 0.55077, 0.55859,
+            0.5664, 0.57421, 0.58203, 0.58984, 0.59765, 0.60546, 0.61328,
+            0.62109, 0.6289, 0.63671, 0.64453, 0.65234, 0.66015, 0.66796,
+            0.67968, 0.68749, 0.69531, 0.70312, 0.71093, 0.71875, 0.72656,
+            0.73437, 0.74218, 0.75, 0.75781, 0.76562, 0.77343, 0.78125, 0.78906,
+            0.79687, 0.80468, 0.8125, 0.82031, 0.82812, 0.83593, 0.84375,
+            0.85156, 0.85937, 0.86718, 0.875, 0.88281, 0.89062, 0.89844,
+            0.90625, 0.91406, 0.92187, 0.92969, 0.9375, 0.94531, 0.95312,
+            0.96094, 0.96875, 0.97656, 0.98438, 0.99219, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+            0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609, 0.99609,
+          ];
+          bluearray0 = [
+            0.0, 0.0494545, 0.0987869, 0.147875, 0.196612, 0.244862, 0.2925,
+            0.339437, 0.385534, 0.430701, 0.4748, 0.517739, 0.559426, 0.599725,
+            0.63856, 0.675837, 0.711467, 0.745342, 0.777401, 0.807568, 0.835737,
+            0.861875, 0.885893, 0.907759, 0.927398, 0.944762, 0.959808,
+            0.972519, 0.982834, 0.990753, 0.996262, 0.999313, 0.999924,
+            0.998093, 0.993805, 0.987106, 0.977981, 0.966461, 0.952575,
+            0.936355, 0.917845, 0.897108, 0.874159, 0.849073, 0.821897,
+            0.792721, 0.761608, 0.728634, 0.693874, 0.657404, 0.619333,
+            0.579751, 0.53875, 0.496422, 0.452888, 0.40824, 0.3626, 0.31606,
+            0.268757, 0.220798, 0.17229, 0.123369, 0.0741436, 0.0247349, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5292,
+            0.53871, 0.54823, 0.55778, 0.56739, 0.57706, 0.58673, 0.59641,
+            0.60612, 0.61589, 0.62572, 0.63556, 0.64545, 0.65536, 0.66527,
+            0.67518, 0.68517, 0.69517, 0.7052, 0.71527, 0.72534, 0.73541,
+            0.74549, 0.7556, 0.76577, 0.776, 0.78623, 0.79641, 0.8066, 0.81675,
+            0.82667, 0.83611, 0.84496, 0.85303, 0.86016, 0.86623, 0.87091,
+            0.87468, 0.87767, 0.87993, 0.88145, 0.88243, 0.88304, 0.88334,
+            0.88335, 0.88311, 0.88264, 0.88199, 0.88119, 0.8803, 0.87934,
+            0.87822, 0.87699, 0.87571, 0.8744, 0.87296, 0.87152, 0.87003,
+            0.86847, 0.86687, 0.86528, 0.86368, 0.86202, 0.86031, 0.85856,
+            0.85689, 0.85513, 0.85343, 0.85171, 0.84996, 0.8482, 0.84651,
+            0.84483, 0.84316, 0.84149, 0.83989, 0.8383, 0.83675, 0.83527,
+            0.83384, 0.83249, 0.8312, 0.82998, 0.82885, 0.82785, 0.82705,
+            0.82633, 0.82566, 0.82509, 0.82464, 0.82432, 0.824, 0.82379, 0.8236,
+            0.82336, 0.82312, 0.82288, 0.82253, 0.8221, 0.82159, 0.82095,
+            0.82009, 0.81916, 0.8181, 0.81687, 0.81551, 0.81401, 0.81238,
+            0.81064, 0.80877, 0.80677, 0.80463, 0.80236, 0.80001, 0.79759,
+            0.79503, 0.79247, 0.78976, 0.78696, 0.78415, 0.78127, 0.77832,
+            0.77531, 0.77224, 0.76911, 0.76591, 0.76264, 0.75937, 0.75606,
+            0.7527, 0.74934, 0.74584, 0.74232, 0.73881, 0.73528, 0.73168,
+            0.72801, 0.72434, 0.7206, 0.71677, 0.71301, 0.70918, 0.7053,
+            0.70135, 0.69735, 0.69335, 0.68929, 0.68521, 0.6811, 0.67695,
+            0.67279, 0.66849, 0.66423, 0.65993, 0.65554, 0.65122, 0.64677,
+            0.64229, 0.63778, 0.63323, 0.62867, 0.62405, 0.61941, 0.61477,
+            0.61013, 0.60541, 0.60062, 0.59588, 0.59113, 0.58634, 0.58154,
+            0.57674, 0.57195, 0.56718, 0.56245, 0.55766, 0.553, 0.54831,
+            0.54366, 0.5391, 0.53454, 0.53006, 0.52568, 0.52136, 0.51706,
+            0.5129, 0.50881, 0.50474, 0.50072, 0.49681, 0.49297, 0.4892,
+            0.48549, 0.48184, 0.47825, 0.47465, 0.47119, 0.46775, 0.46434,
+            0.46098, 0.45763, 0.4544, 0.45116, 0.44794, 0.44482, 0.4417,
+            0.43865, 0.43557, 0.4325, 0.42954, 0.42659, 0.42363, 0.42072,
+            0.41784, 0.41496, 0.41209, 0.40927, 0.40648, 0.40368, 0.40088,
+            0.39808, 0.39535, 0.39263, 0.38992, 0.3872, 0.38448, 0.38176,
+            0.37909, 0.37643, 0.37371, 0.37108, 0.36844, 0.36575, 0.36306,
+            0.36042, 0.35779, 0.35508, 0.35241, 0.34975, 0.34703, 0.34431,
+            0.34159, 0.33888, 0.33616, 0.33343, 0.33055, 0.32774, 0.3249,
+            0.32202, 0.31914, 0.31618, 0.31309, 0.30998, 0.30683, 0.30363,
+            0.30027, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961, 0.4961,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219, 0.49219,
+            0.48827, 0.48827, 0.48827, 0.48827, 0.48827, 0.48827, 0.48827,
+            0.48827, 0.48827, 0.48827, 0.48827, 0.48827, 0.48827, 0.49219,
+            0.4961, 0.50001, 0.5039, 0.5078, 0.51173, 0.51952, 0.52345, 0.52734,
+            0.53124, 0.53515, 0.53905, 0.54296, 0.54687, 0.55077, 0.55468,
+            0.55859, 0.5664, 0.57031, 0.57421, 0.57812, 0.58203, 0.58593,
+            0.58984, 0.59374, 0.59765, 0.60156, 0.60546, 0.61328, 0.61718,
+            0.62109, 0.62499, 0.6289, 0.63281, 0.63671, 0.64062, 0.64453,
+            0.64843, 0.65234, 0.66015, 0.66406, 0.66796, 0.67187, 0.67578,
+            0.67968, 0.68359, 0.68749, 0.6914, 0.69531, 0.69921, 0.70703,
+            0.71093, 0.71484, 0.71875, 0.72265, 0.72656, 0.73047, 0.73437,
+            0.73828, 0.74218, 0.74609, 0.7539, 0.75781, 0.76172,
+          ];
+        }
+        //  var xhttp0 = new XMLHttpRequest();
+        //  xhttp0.onreadystatechange = function()
+        //  {
+        //      	 if (this.readyState == 4 && this.status == 200)
+        //      	 {
+        //      	  	 var inputlines = this.responseText.split("\n");
+
+        //      	  	 for (var i=0; i<inputlines.length; i++)
+        //             {
+        //             	   var thisline = inputlines[i];
+        //            	   var vectors = thisline.split("  ");
+
+        //            	   if (sign == 0)
+        //            	   {
+        //                   alert("were reading 0");
+        //            	      temparray0.push(parseFloat(vectors[0]));
+        //            	      redarray0.push(parseFloat(vectors[1]));
+        //            	      greenarray0.push(parseFloat(vectors[2]));
+        //            	      bluearray0.push(parseFloat(vectors[3]));
+        //            	   }
+
+        //            	   else if (sign == 1)
+        //            	   {
+        //                   alert("we're reading 1");
+        //            	      temparray1.push(parseFloat(vectors[0]));
+        //            	      redarray1.push(parseFloat(vectors[1]));
+        //            	      greenarray1.push(parseFloat(vectors[2]));
+        //            	      bluearray1.push(parseFloat(vectors[3]));
+        //            	   }
+
+        //            	   else if (sign == 2)
+        //            	   {
+        //                   alert("we're reading 2");
+        //            	      temparray2.push(parseFloat(vectors[0]));
+        //            	      redarray2.push(parseFloat(vectors[1]));
+        //            	      greenarray2.push(parseFloat(vectors[2]));
+        //            	      bluearray2.push(parseFloat(vectors[3]));
+        //            	   }
+
+        //            	   else if (sign == 3)
+        //            	   {
+        //                   alert("we're reading 3");
+        //            	      temparray3.push(parseFloat(vectors[0]));
+        //            	      redarray3.push(parseFloat(vectors[1]));
+        //            	      greenarray3.push(parseFloat(vectors[2]));
+        //            	      bluearray3.push(parseFloat(vectors[3]));
+        //            	   }
+        //             }
+        //      	 }
+        //  }
+
+        //  xhttp0.open("GET", colorfile, true);
+        //  xhttp0.send();
+      }
+
+      function readdatafile(datafile) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          document.getElementById("content").innerHTML = "";
+          (elementlist = []),
+            (geometrylist = []),
+            (materiallist = []),
+            (targetList = []);
+          (depth_array = []),
+            (radius_array = []),
+            (mapradius_array = []),
+            (volume_array = []),
+            (cx_array = []),
+            (cy_array = []),
+            (cz_array = []),
+            (minmaxarray = []);
+
+          var text = e.target.result;
+          var inputlines = text.split(/[\r\n]+/g);
+
+          var file_extension = inputlines[0];
+
+          if (file_extension != "******path******") {
+            alert("The File Can Not be Readed! Please Select a *.path File.");
+            return;
+          }
+
+          var date_period = inputlines[1].split("  ");
+          var date_start = date_period[0];
+          var date_end = date_period[1];
+          dateperiod = date_start + " - " + date_end;
+          eddypro["Date"] = dateperiod;
+
+          var pathproperties = inputlines[2].split(" ");
+          temp_min = parseFloat(pathproperties[0]);
+          temp_max = parseFloat(pathproperties[1]);
+          salt_min = parseFloat(pathproperties[2]);
+          salt_max = parseFloat(pathproperties[3]);
+          speed_min = parseFloat(pathproperties[4]);
+          speed_max = parseFloat(pathproperties[5]);
+
+          if (eddyvariables["a"] == true) {
+            legendleft = temp_min;
+            legendright = temp_max;
+          } else if (eddyvariables["b"] == true) {
+            legendleft = salt_min;
+            legendright = salt_max;
+          } else if (eddyvariables["c"] == true) {
+            legendleft = parseFloat(speed_min);
+            legendright = parseFloat(speed_max);
+          }
+
+          //console.log(legendleft);
+          //console.log(legendright);
+
+          spin_orientation = parseInt(inputlines[3]);
+          //console.log(spin_orientation);
+
+          if (spin_orientation >= 0) {
+            //console.log("spin >=0");
+            sidemat = new THREE.MeshLambertMaterial({ color: 0x66cc00 });
+            insetmat = new THREE.MeshBasicMaterial({ color: 0x00cc00 });
+
+            eddypro["Orientation"] = "Counter-Clockwise";
+          } else if (spin_orientation < 0) {
+            //console.log("spin <0");
+            sidemat = new THREE.MeshLambertMaterial({ color: 0x6600cc });
+            insetmat = new THREE.MeshBasicMaterial({ color: 0x4c0099 });
+
+            eddypro["Orientation"] = "Clockwise";
+          }
+
+          //else
+          //{
+          //	console.log("spin not set");
+          //}
+
+          (distance = 0), (eddy_num = 0);
+
+          for (var i = 4; i < inputlines.length; i++) {
+            var thisline = inputlines[i];
+            var vectors = thisline.split(" ");
+
+            if (
+              vectors.length == 3 &&
+              parseInt(vectors[0]) == 155 &&
+              parseInt(vectors[1]) == 155
+            ) {
+              eddy_num++;
+              var verticecolor_red = [],
+                verticecolor_green = [],
+                verticecolor_blue = [];
+
+              i++;
+              thisline = inputlines[i];
+              var vectors1 = thisline.split(" ");
               var volume = parseInt(vectors1[0]);
               var center_x = parseFloat(vectors1[1]);
               var center_y = parseFloat(vectors1[2]);
@@ -614,21 +1638,22 @@ function readdatafile(datafile)
               var low_z = parseFloat(vectors1[6]);
               var up_x = parseFloat(vectors1[7]);
               var up_y = parseFloat(vectors1[8]);
-              var up_z = parseFloat(vectors1[9]);              	                    
-              
-              var mapradius = 0.5*Math.sqrt((up_x-low_x)*(up_y-low_y));  
-              var thisradius = 111*mapradius*Math.cos( (center_y/180)*Math.PI  );             
-                         	    
-              depth_array.push( 1000.0*(up_z - low_z) ); // original
+              var up_z = parseFloat(vectors1[9]);
+
+              var mapradius = 0.5 * Math.sqrt((up_x - low_x) * (up_y - low_y));
+              var thisradius =
+                111 * mapradius * Math.cos((center_y / 180) * Math.PI);
+
+              depth_array.push(1000.0 * (up_z - low_z)); // original
               //depth_array.push( 100.0*(up_z - low_z) );
-              mapradius_array.push( mapradius );  
-              radius_array.push( thisradius );                	    
-              volume_array.push( thisradius*thisradius*(up_z - low_z) );              	    
-              	                  	    
-              i++;              	    
-              thisline = inputlines[i];              	    
+              mapradius_array.push(mapradius);
+              radius_array.push(thisradius);
+              volume_array.push(thisradius * thisradius * (up_z - low_z));
+
+              i++;
+              thisline = inputlines[i];
               var vectors2 = thisline.split(" ");
-              	    
+
               var points_num = parseInt(vectors2[0]);
               var this_tmin = parseFloat(vectors2[1]);
               var this_tmax = parseFloat(vectors2[2]);
@@ -636,908 +1661,1011 @@ function readdatafile(datafile)
               var this_stmax = parseFloat(vectors2[4]);
               var this_spdmin = parseFloat(vectors2[5]);
               var this_spdmax = parseFloat(vectors2[6]);
-              	    
-              var currentmm = {tmin: this_tmin, tmax: this_tmax, stmin: this_stmin, stmax: this_stmax, spdmin: this_spdmin, spdmax: this_spdmax};              	    
+
+              var currentmm = {
+                tmin: this_tmin,
+                tmax: this_tmax,
+                stmin: this_stmin,
+                stmax: this_stmax,
+                spdmin: this_spdmin,
+                spdmax: this_spdmax,
+              };
               minmaxarray.push(currentmm);
-			console.log("num vertices=")
-              	      console.log(points_num);
-             	    
-              var eddygeometry = new THREE.Geometry();   
+            //   console.log("num vertices=");
+            //   console.log(points_num);
+
+              var eddygeometry = new THREE.Geometry();
               var j;
-              	                 	                  	     
-              for (j=i+1; j<i+points_num+1; j++)
-              {
-              	  thisline = inputlines[j];
-              	  var coordinates = thisline.split(" ");
-              	  eddygeometry.vertices.push( new THREE.Vector3( parseFloat( coordinates[0] ), parseFloat( coordinates[1] ), parseFloat( coordinates[2]) ) );
-              	     	  
-              	  var getindex;          	         
-              	                      	        
-              	  if (eddyvariables['a'] == true)
-              	  {
-              	     getindex = findcolor( parseFloat(coordinates[3]), 0.99*temp_min, 1.01*temp_max, spin_orientation); 
-              	        	 
-              	     if (spin_orientation==1)
-              	     {
-                        verticecolor_red.push(redarray0[getindex]);
-                        verticecolor_green.push(greenarray0[getindex]);
-              	        verticecolor_blue.push(bluearray0[getindex]);
-              	     }
-              	           
-              	     else if (spin_orientation==-1)
-              	     {
-                        verticecolor_red.push(redarray3[getindex]);
-                        verticecolor_green.push(greenarray3[getindex]);
-              	        verticecolor_blue.push(bluearray3[getindex]);
-              	     }
+
+              for (j = i + 1; j < i + points_num + 1; j++) {
+                thisline = inputlines[j];
+                var coordinates = thisline.split(" ");
+                eddygeometry.vertices.push(
+                  new THREE.Vector3(
+                    parseFloat(coordinates[0]),
+                    parseFloat(coordinates[1]),
+                    parseFloat(coordinates[2])
+                  )
+                );
+
+                var getindex;
+
+                if (eddyvariables["a"] == true) {
+                  getindex = findcolor(
+                    parseFloat(coordinates[3]),
+                    0.99 * temp_min,
+                    1.01 * temp_max,
+                    spin_orientation
+                  );
+
+                  if (spin_orientation == 1) {
+                    verticecolor_red.push(redarray0[getindex]);
+                    verticecolor_green.push(greenarray0[getindex]);
+                    verticecolor_blue.push(bluearray0[getindex]);
+                  } else if (spin_orientation == -1) {
+                    verticecolor_red.push(redarray3[getindex]);
+                    verticecolor_green.push(greenarray3[getindex]);
+                    verticecolor_blue.push(bluearray3[getindex]);
                   }
-       
-                  else if (eddyvariables['b'] == true)
-                  {
-                     getindex = findcolor( parseFloat(coordinates[4]), 0.99*salt_min, 1.01*salt_max, spin_orientation);
-                     verticecolor_red.push(redarray1[getindex]);
-                     verticecolor_green.push(greenarray1[getindex]);
-              	     verticecolor_blue.push(bluearray1[getindex]);
-                  }
-       
-                  else if (eddyvariables['c'] == true)
-                  {
-                     getindex = findcolor( parseFloat(coordinates[5]), 0.99*speed_min, 1.01*speed_max, spin_orientation);
-                     verticecolor_red.push(redarray2[getindex]);
-                     verticecolor_green.push(greenarray2[getindex]);
-              	     verticecolor_blue.push(bluearray2[getindex]);
-              	  }           	     	  
+                } else if (eddyvariables["b"] == true) {
+                  getindex = findcolor(
+                    parseFloat(coordinates[4]),
+                    0.99 * salt_min,
+                    1.01 * salt_max,
+                    spin_orientation
+                  );
+                  verticecolor_red.push(redarray1[getindex]);
+                  verticecolor_green.push(greenarray1[getindex]);
+                  verticecolor_blue.push(bluearray1[getindex]);
+                } else if (eddyvariables["c"] == true) {
+                  getindex = findcolor(
+                    parseFloat(coordinates[5]),
+                    0.99 * speed_min,
+                    1.01 * speed_max,
+                    spin_orientation
+                  );
+                  verticecolor_red.push(redarray2[getindex]);
+                  verticecolor_green.push(greenarray2[getindex]);
+                  verticecolor_blue.push(bluearray2[getindex]);
+                }
               }
-		console.log("read verticies")
-              	     
+            //   console.log("read verticies");
+
               i = j;
-              	                  	     
+
               var faces_num_string = inputlines[i];
               var faces_num = parseInt(faces_num_string);
-		console.log("num faces =")
-		console.log(faces_num)
-              	     
-              for (j=i+1; j<i+faces_num+1; j++)
-              {
-              	  thisline = inputlines[j];
-              	  var coordinates = thisline.split(" ");
-              	     	                 	     	   
-              	  eddygeometry.faces.push( new THREE.Face3( parseInt( coordinates[1] ), parseInt( coordinates[2] ), parseInt( coordinates[3]) ) );
-              	                 	    
-              	  var color_p1 = new THREE.Color( 0xff0000 );
-              	  color_p1.setRGB( verticecolor_red[parseInt(coordinates[1])], verticecolor_green[parseInt(coordinates[1])], verticecolor_blue[parseInt(coordinates[1])] );
-              	         
-              	  var color_p2 = new THREE.Color( 0x00ff00 );
-              	  color_p2.setRGB( verticecolor_red[parseInt(coordinates[2])], verticecolor_green[parseInt(coordinates[2])], verticecolor_blue[parseInt(coordinates[2])] );
-              	         
-              	  var color_p3 = new THREE.Color( 0x0000ff );
-              	  color_p3.setRGB( verticecolor_red[parseInt(coordinates[3])], verticecolor_green[parseInt(coordinates[3])], verticecolor_blue[parseInt(coordinates[3])] );
-              	                       	         
-              	  face = eddygeometry.faces[j-i-1];	
-              	  face.vertexColors[0] = color_p1;
-              	  face.vertexColors[1] = color_p2;
-              	  face.vertexColors[2] = color_p3;              	    
-              } 
-		console.log("read faces")
-		for (q = 240; q < 250; q++) // stopped stepping at 170
-		{
-		console.log(eddygeometry.faces[q-1])
-		}
-		//console.log(eddygeometry.faces[245]) // 200,225 okay; 300, 250 isn't
-		//console.log(eddygeometry.faces[483])
-              	     
-              i = j;  
-              	     
+            //   console.log("num faces =");
+            //   console.log(faces_num);
+
+              for (j = i + 1; j < i + faces_num + 1; j++) {
+                thisline = inputlines[j];
+                var coordinates = thisline.split(" ");
+
+                eddygeometry.faces.push(
+                  new THREE.Face3(
+                    parseInt(coordinates[1]),
+                    parseInt(coordinates[2]),
+                    parseInt(coordinates[3])
+                  )
+                );
+
+                var color_p1 = new THREE.Color(0xff0000);
+                color_p1.setRGB(
+                  verticecolor_red[parseInt(coordinates[1])],
+                  verticecolor_green[parseInt(coordinates[1])],
+                  verticecolor_blue[parseInt(coordinates[1])]
+                );
+
+                var color_p2 = new THREE.Color(0x00ff00);
+                color_p2.setRGB(
+                  verticecolor_red[parseInt(coordinates[2])],
+                  verticecolor_green[parseInt(coordinates[2])],
+                  verticecolor_blue[parseInt(coordinates[2])]
+                );
+
+                var color_p3 = new THREE.Color(0x0000ff);
+                color_p3.setRGB(
+                  verticecolor_red[parseInt(coordinates[3])],
+                  verticecolor_green[parseInt(coordinates[3])],
+                  verticecolor_blue[parseInt(coordinates[3])]
+                );
+
+                face = eddygeometry.faces[j - i - 1];
+                face.vertexColors[0] = color_p1;
+                face.vertexColors[1] = color_p2;
+                face.vertexColors[2] = color_p3;
+              }
+            //   console.log("read faces");
+              for (
+                q = 240;
+                q < 250;
+                q++ // stopped stepping at 170
+              ) {
+               //  console.log(eddygeometry.faces[q - 1]);
+              }
+              //console.log(eddygeometry.faces[245]) // 200,225 okay; 300, 250 isn't
+              //console.log(eddygeometry.faces[483])
+
+              i = j;
+
               eddygeometry.computeFaceNormals();
-		console.log("normals computed")
+            //   console.log("normals computed");
               eddygeometry.computeVertexNormals();
               eddygeometry.computeBoundingSphere();
-                    
 
-              geometrylist.push(eddygeometry);			              
-			        materiallist.push(mainmat);
-			              
-			        currentmesh = new THREE.Mesh(eddygeometry, sidemat);		              
-			        currentmesh.castShadow = true;
-              currentmesh.receiveShadow = true;		
-              
+              geometrylist.push(eddygeometry);
+              materiallist.push(mainmat);
+
+              currentmesh = new THREE.Mesh(eddygeometry, sidemat);
+              currentmesh.castShadow = true;
+              currentmesh.receiveShadow = true;
+
               currentmesh.scale.set(1, 1, 1.1);
-                
-              
+
               var scene = new THREE.Scene();
-			        var element = document.createElement( "div" );
-			        element.id = eddy_num;
-			        element.className = "list-item";
-			        element.innerHTML = template.replace( '$', eddy_num );			         
-			  			  
-				      scene.userData.element = element.querySelector( ".scene" );
-				      content.appendChild( element );		    
-              
-              
-              var thisbox = new THREE.Box3().setFromObject( currentmesh );
-					    var boxx = thisbox.max.x - thisbox.min.x;
-					    var boxy = thisbox.max.y - thisbox.min.y;					
-					    var diameter = Math.max(boxx, boxy);	
-					    
-					    //console.log(diameter);				    
-					    
-					    var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);			              
-				    	camera.position.x = 0;
+              var element = document.createElement("div");
+              element.id = eddy_num;
+              element.className = "list-item";
+              element.innerHTML = template.replace("$", eddy_num);
+
+              scene.userData.element = element.querySelector(".scene");
+              content.appendChild(element);
+
+              var thisbox = new THREE.Box3().setFromObject(currentmesh);
+              var boxx = thisbox.max.x - thisbox.min.x;
+              var boxy = thisbox.max.y - thisbox.min.y;
+              var diameter = Math.max(boxx, boxy);
+
+              //console.log(diameter);
+
+              var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+              camera.position.x = 0;
               camera.position.y = 0;
-							
-              camera.position.z = 0.8+diameter;
-              
-	              
-				      scene.userData.camera = camera;			            			
-				      elementlist.push(element);         
-              	  			  
-				      scene.add( currentmesh );
-				      scene.add( new THREE.HemisphereLight( 0xaaaaaa, 0x444444 ) );
-				            		        
-				            
-				      var shiftx = currentmesh.geometry.boundingSphere.center.x;
-				      var shifty = currentmesh.geometry.boundingSphere.center.y;
-				      var shiftz = currentmesh.geometry.boundingSphere.center.z;      
-				            
-				      cx_array.push(shiftx);
-				      cy_array.push(shifty);
-				      cz_array.push(shiftz);
-				            
-				      currentmesh.geometry.translate( -shiftx, -shifty, -shiftz );
-				      currentmesh.rotation.x = -Math.PI / 3 ;			
-				      
-				      
-				      var clonegeometry = currentmesh.geometry.clone();
-		          //var clonematerial = currentmesh.material.clone();
-		          var currentmesh_clone = new THREE.Mesh(clonegeometry, insetmat);	
-		          
-		          //console.log(currentmesh);
-			              
-			        targetList.push(currentmesh_clone);  			                           
 
-   	
+              camera.position.z = 0.8 + diameter;
 
-				      var light = new THREE.DirectionalLight( 0xffffff, 0.5 );
-				      light.position.set( 1, 1, 1 );
-			        scene.add( light );			            	
-				
-				      scenes.push( scene );
-				      //scene2.add( currentmesh );        	               	     
-           }             	         	  
-       }//for                                               
-        
-        
-       var factor_sum = 0;
-           
-       for (var i2=0; i2<cx_array.length-1; i2++)
-       { 
-       	   var currentshift = geodistance(cy_array[i2], cx_array[i2], cy_array[i2+1], cx_array[i2+1], "K");    
-           distance = distance + currentshift;  
-           
-           var mapdist =   Math.sqrt( (cx_array[i2+1]-cx_array[i2])*(cx_array[i2+1]-cx_array[i2]) + (cy_array[i2+1]-cy_array[i2])*(cy_array[i2+1]-cy_array[i2]) ); 
-           var factor = (mapradius_array[i2+1] + mapradius_array[i2])/mapdist;
-           //console.log(factor); 
-           
-           factor_sum = factor_sum + factor;
-       }
-       
-       var avg_factor = factor_sum/(cx_array.length-1);
-       // shiftscale controls the distance between eddys in a path
-       //     smaller means closer -- don't know what value gives original or real distance
-       //shiftscale = 0.84*avg_factor;  //original
-       shiftscale = 0.5*avg_factor;
-       //shiftscale = 0.1*avg_factor;
-       
-    
-       eddypro['Distance'] = round(distance, 2) + " km";
-       eddypro['Duration'] = cx_array.length + " days";
-                      
-           
-       elementlist.forEach( function( elm )            
-		   {		       	
-			        elm.addEventListener ("click", function() 
-				      {   
-					       currentEddyID = elm.id;					  					  
-					       clickEddy(currentEddyID);
-				      });
-		   });
-		       		       
-		   setMode( 'a' );
-		   	    		   
-		   drawMiniature();		   		   		       	       
-    };
-    
-    reader.readAsText(datafile,"UTF-8");  
-}
+              scene.userData.camera = camera;
+              elementlist.push(element);
 
+              scene.add(currentmesh);
+              scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x444444));
 
+              var shiftx = currentmesh.geometry.boundingSphere.center.x;
+              var shifty = currentmesh.geometry.boundingSphere.center.y;
+              var shiftz = currentmesh.geometry.boundingSphere.center.z;
 
+              cx_array.push(shiftx);
+              cy_array.push(shifty);
+              cz_array.push(shiftz);
 
+              currentmesh.geometry.translate(-shiftx, -shifty, -shiftz);
+              currentmesh.rotation.x = -Math.PI / 3;
 
-function drawMiniature()
-{
-	  while (scene2.children.length > 0) 
-          scene2.remove(scene2.children[0]); 
-                
-             
-    var pivot2 = new THREE.Group(); 
-    var group2 = new THREE.Object3D();
-       
-       var center_x = 0.5*(Math.min.apply(null, cx_array) + Math.max.apply(null, cx_array));
-	     var center_y = 0.5*(Math.min.apply(null, cy_array) + Math.max.apply(null, cy_array));
-	     
-		   
-		   for (var i2=0; i2<targetList.length; i2++)
-		   {         
-           targetList[i2].position.set( 0.8*shiftscale*(cx_array[i2] - center_x), 0.8*shiftscale*(cy_array[i2] - center_y), 0 );                     
-           group2.add( targetList[i2] );	         
-		   }                
-		   
-		   scene2.add( pivot2 );			   
-		   pivot2.add( group2 );
+              var clonegeometry = currentmesh.geometry.clone();
+              //var clonematerial = currentmesh.material.clone();
+              var currentmesh_clone = new THREE.Mesh(clonegeometry, insetmat);
 
-       pivot2.rotation.x = -Math.PI / 3 ;
-       //pivot2.rotation.z = -0.3*Math.PI; 
-       
-       var path_width = 0.8*shiftscale * (Math.max.apply(null, cx_array) -  Math.min.apply(null, cx_array));	 
-       var path_depth = 0.8*shiftscale * (Math.max.apply(null, cy_array) -  Math.min.apply(null, cy_array));	
-       
-       //console.log(Math.max(path_width, path_depth));
-  
-         
-	     CAM_DISTANCE = 0.81*Math.max(path_width, path_depth);
-	     
-	     if (CAM_DISTANCE>28)
-	        CAM_DISTANCE = 28;
-	     
-       
-       //pivot2.position.x += 0.1*path_width ;
-       		   
-		   var light2 = new THREE.HemisphereLight( 0xaaaaaa, 0xFFFFCC );
-		   light2.position.set( 0, 0, 5 );
-		   scene2.add( light2 );
-		    
-       var directionlight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-		   directionlight.position.set( 0, 0, 10 );
-	     scene2.add( directionlight );   
-}
+              //console.log(currentmesh);
 
+              targetList.push(currentmesh_clone);
 
+              var light = new THREE.DirectionalLight(0xffffff, 0.5);
+              light.position.set(1, 1, 1);
+              scene.add(light);
 
+              scenes.push(scene);
+              //scene2.add( currentmesh );
+            }
+          } //for
 
+          var factor_sum = 0;
 
-function setMode( prop )
-{
-    for (let param in displaymodes)
-        displaymodes[param] = false;
+          for (var i2 = 0; i2 < cx_array.length - 1; i2++) {
+            var currentshift = geodistance(
+              cy_array[i2],
+              cx_array[i2],
+              cy_array[i2 + 1],
+              cx_array[i2 + 1],
+              "K"
+            );
+            distance = distance + currentshift;
 
-    displaymodes[prop] = true;
+            var mapdist = Math.sqrt(
+              (cx_array[i2 + 1] - cx_array[i2]) *
+                (cx_array[i2 + 1] - cx_array[i2]) +
+                (cy_array[i2 + 1] - cy_array[i2]) *
+                  (cy_array[i2 + 1] - cy_array[i2])
+            );
+            var factor =
+              (mapradius_array[i2 + 1] + mapradius_array[i2]) / mapdist;
+            //console.log(factor);
 
-    while (mainscene.children.length > 0) 
-          mainscene.remove(mainscene.children[0]);           
-          
-    drawColorbar(legendleft, legendright, spin_orientation);
+            factor_sum = factor_sum + factor;
+          }
 
-    if (prop=='a')
-    {    	
-    	 maincamera.position.z = 2.5;
-       clickEddy(currentEddyID);   
-       trackballControls.reset();   
-       
-       container2.style.backgroundColor = "rgba(235,235,235,0.5)";
-        
-       drawMiniature();      
-    }
-  
-    else if (prop=='b')
-    { 
-    	 //maincamera.position.z = 8;
-    	     	 
-    	 pivot = new THREE.Group(); 
-       group = new THREE.Object3D();
-       
-       while (scene2.children.length > 0) 
-             scene2.remove(scene2.children[0]); 
-          
-       container2.style.backgroundColor = "rgba(255,255,255,0.0)";  
-       
-           axes = drawAxes( 65 );
-    scene2.add( axes );    
-    CAM_DISTANCE = 200;
-       
-       displayData();
-       clickEddy(currentEddyID); 
-    }
-}
+          var avg_factor = factor_sum / (cx_array.length - 1);
+          // shiftscale controls the distance between eddys in a path
+          //     smaller means closer -- don't know what value gives original or real distance
+          //shiftscale = 0.84*avg_factor;  //original
+          shiftscale = 0.5 * avg_factor;
+          //shiftscale = 0.1*avg_factor;
 
+          eddypro["Distance"] = round(distance, 2) + " km";
+          eddypro["Duration"] = cx_array.length + " days";
 
+          elementlist.forEach(function (elm) {
+            elm.addEventListener("click", function () {
+              currentEddyID = elm.id;
+              clickEddy(currentEddyID);
+            });
+          });
 
-function clickEddy(thisindex)
-{	
-	  for (var i1=0; i1<targetList.length; i1++)
-	      targetList[i1].material= insetmat;
-	  
-	  targetList[thisindex-1].material = new THREE.MeshBasicMaterial({color: 0xFF0000}); 
-	  	  
-	  elementlist.forEach( function( elm )            
-		{		       	
-				elm.style.border = "thick solid #FFFFFF"; 				
-		});
-		
-		
-		elementlist.forEach( function( elm )            
-		{
-				if (elm.id == thisindex)
-				   elm.style.border = "thick solid #FF8000";
-	  });
-	  
-    addColorRange( thisindex );
-       
-    eddypro['Depth'] = round(depth_array[thisindex-1], 2) + " m";
-    eddypro['Radius'] = round(radius_array[thisindex-1], 2) + " km";
-    eddypro['Volume'] = round(volume_array[thisindex-1], 2) + " km3";
-    
-    for (var i in gui.__controllers) 
-    {
-        gui.__controllers[i].updateDisplay();
-    }
-	  
+          setMode("a");
 
-	  
-	  if (displaymodes['a'] == true)
-	  {	  	
-	     var newGeometry = geometrylist[thisindex-1];
-       var newMaterial = materiallist[thisindex-1];  
+          drawMiniature();
+        };
 
-       mainscene.remove(mainmesh);
+        reader.readAsText(datafile, "UTF-8");
+      }
 
-       mainmesh = new THREE.SceneUtils.createMultiMaterialObject(newGeometry, [newMaterial, cubeMaterial]);   
-       mainmesh.rotation.x = -Math.PI / 3 ;
-       mainmesh.scale.set(1, 1, 1.3);
-    	 
-	     mainscene.add( mainmesh );		     	     
-	  }
-	  
-	 	  
-	  
-	  else if (displaymodes['b'] == true)
-	  {  	 
-	  	 var i = 0;
-	  	 meshlist.forEach( function( elm )            
-	     {		       	
-				   var this_r = meshlist[i].material.color.r;	
-				   var this_g = meshlist[i].material.color.g;
-	  	  	 var this_b = meshlist[i].material.color.b;		
-	  	  	 
-	  	  	 if ( this_r == 1 && this_g == 0 && this_b == 0 )
-	  	  	    meshlist[i].material = saved_mat.clone( );
-	  	  	    
-	  	  	 i++;
-		   });
-	  	 
-	  	 saved_mat = meshlist[thisindex-1].material.clone( );
-	  	 meshlist[thisindex-1].material = new THREE.MeshBasicMaterial({color: 0xFF0000}); 
-	  }	  	  
-}
+      function drawMiniature() {
+        while (scene2.children.length > 0) scene2.remove(scene2.children[0]);
 
+        var pivot2 = new THREE.Group();
+        var group2 = new THREE.Object3D();
 
+        var center_x =
+          0.5 *
+          (Math.min.apply(null, cx_array) + Math.max.apply(null, cx_array));
+        var center_y =
+          0.5 *
+          (Math.min.apply(null, cy_array) + Math.max.apply(null, cy_array));
 
+        for (var i2 = 0; i2 < targetList.length; i2++) {
+          targetList[i2].position.set(
+            0.8 * shiftscale * (cx_array[i2] - center_x),
+            0.8 * shiftscale * (cy_array[i2] - center_y),
+            0
+          );
+          group2.add(targetList[i2]);
+        }
 
-function displayData()
-{    
-    var i1 = 0;
-    meshlist = [];
-    
-    var center_x = 0.5*(Math.min.apply(null, cx_array) + Math.max.apply(null, cx_array));
-	  var center_y = 0.5*(Math.min.apply(null, cy_array) + Math.max.apply(null, cy_array));
-	  
-	  var line_mat = new THREE.MeshBasicMaterial({color: 0x000000}); 
-	  //var arrow_mat = new THREE.MeshBasicMaterial({color: 0xFF0000}); 
-	  
-    
-    elementlist.forEach( function( elm )            
-		{
-			  var newGeometry = geometrylist[i1];
-        var newMaterial = materiallist[i1];                 
-        
- /*
+        scene2.add(pivot2);
+        pivot2.add(group2);
+
+        pivot2.rotation.x = -Math.PI / 3;
+        //pivot2.rotation.z = -0.3*Math.PI;
+
+        var path_width =
+          0.8 *
+          shiftscale *
+          (Math.max.apply(null, cx_array) - Math.min.apply(null, cx_array));
+        var path_depth =
+          0.8 *
+          shiftscale *
+          (Math.max.apply(null, cy_array) - Math.min.apply(null, cy_array));
+
+        //console.log(Math.max(path_width, path_depth));
+
+        CAM_DISTANCE = 0.81 * Math.max(path_width, path_depth);
+
+        if (CAM_DISTANCE > 28) CAM_DISTANCE = 28;
+
+        //pivot2.position.x += 0.1*path_width ;
+
+        var light2 = new THREE.HemisphereLight(0xaaaaaa, 0xffffcc);
+        light2.position.set(0, 0, 5);
+        scene2.add(light2);
+
+        var directionlight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionlight.position.set(0, 0, 10);
+        scene2.add(directionlight);
+      }
+
+      function setMode(prop) {
+        for (let param in displaymodes) displaymodes[param] = false;
+
+        displaymodes[prop] = true;
+
+        while (mainscene.children.length > 0) {
+          mainscene.remove(mainscene.children[0]);
+        }
+      //   console.log(legendleft, legendright);
+        drawColorbar(legendleft, legendright, spin_orientation);
+
+        if (prop == "a") {
+          maincamera.position.z = 2.5;
+          clickEddy(currentEddyID);
+          trackballControls.reset();
+
+          container2.style.backgroundColor = "rgba(235,235,235,0.5)";
+
+          drawMiniature();
+        } else if (prop == "b") {
+          //maincamera.position.z = 8;
+
+          pivot = new THREE.Group();
+          group = new THREE.Object3D();
+
+          while (scene2.children.length > 0) scene2.remove(scene2.children[0]);
+
+          container2.style.backgroundColor = "rgba(255,255,255,0.0)";
+
+          axes = drawAxes(65);
+          scene2.add(axes);
+          CAM_DISTANCE = 200;
+
+          displayData();
+          clickEddy(currentEddyID);
+        }
+      }
+
+      function clickEddy(thisindex) {
+        for (var i1 = 0; i1 < targetList.length; i1++)
+          targetList[i1].material = insetmat;
+
+        targetList[thisindex - 1].material = new THREE.MeshBasicMaterial({
+          color: 0xff0000,
+        });
+
+        elementlist.forEach(function (elm) {
+          elm.style.border = "thick solid #FFFFFF";
+        });
+
+        elementlist.forEach(function (elm) {
+          if (elm.id == thisindex) elm.style.border = "thick solid #FF8000";
+        });
+        addColorRange(thisindex);
+
+        eddypro["Depth"] = round(depth_array[thisindex - 1], 2) + " m";
+        eddypro["Radius"] = round(radius_array[thisindex - 1], 2) + " km";
+        eddypro["Volume"] = round(volume_array[thisindex - 1], 2) + " km3";
+
+        for (var i in gui.__controllers) {
+          gui.__controllers[i].updateDisplay();
+        }
+
+        if (displaymodes["a"] == true) {
+          var newGeometry = geometrylist[thisindex - 1];
+          var newMaterial = materiallist[thisindex - 1];
+
+          mainscene.remove(mainmesh);
+
+          mainmesh = new SceneUtils.createMultiMaterialObject(newGeometry, [
+            newMaterial,
+            cubeMaterial,
+          ]);
+          mainmesh.rotation.x = -Math.PI / 3;
+          mainmesh.scale.set(1, 1, 1.3);
+
+          mainscene.add(mainmesh);
+        } else if (displaymodes["b"] == true) {
+          var i = 0;
+          meshlist.forEach(function (elm) {
+            var this_r = meshlist[i].material.color.r;
+            var this_g = meshlist[i].material.color.g;
+            var this_b = meshlist[i].material.color.b;
+
+            if (this_r == 1 && this_g == 0 && this_b == 0)
+              meshlist[i].material = saved_mat.clone();
+
+            i++;
+          });
+
+          saved_mat = meshlist[thisindex - 1].material.clone();
+          meshlist[thisindex - 1].material = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+          });
+        }
+      }
+
+      function displayData() {
+        var i1 = 0;
+        meshlist = [];
+
+        var center_x =
+          0.5 *
+          (Math.min.apply(null, cx_array) + Math.max.apply(null, cx_array));
+        var center_y =
+          0.5 *
+          (Math.min.apply(null, cy_array) + Math.max.apply(null, cy_array));
+
+        var line_mat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        //var arrow_mat = new THREE.MeshBasicMaterial({color: 0xFF0000});
+
+        elementlist.forEach(function (elm) {
+          var newGeometry = geometrylist[i1];
+          var newMaterial = materiallist[i1];
+
+          /*
         if (spin_orientation >= 0)        
            currentmesh = new THREE.Mesh( newGeometry, new THREE.MeshLambertMaterial( { color: 0x66cc00, transparent: true, opacity: 0.75 } ));       
           
         else if (spin_orientation < 0)
         	 currentmesh = new THREE.Mesh( newGeometry, new THREE.MeshLambertMaterial( { color: 0x6600cc, transparent: true, opacity: 0.75 } )); 
 */
- 
-        currentmesh = new THREE.Mesh( newGeometry, newMaterial );       
- 
-        currentmesh.castShadow = true;
-        currentmesh.receiveShadow = true;           
-        currentmesh.position.set( shiftscale*(cx_array[i1] - center_x), shiftscale*(cy_array[i1] - center_y), 0 );
-        currentmesh.name = i1+1;
-          
-        currentmesh.scale.set(1, 1, 1.3);
-        			
-				group.add( currentmesh );
-				meshlist.push(currentmesh);
-				
-				
-				var line_gap = 0.5;
-				
-				if (round(Math.max.apply(null, depth_array), 1) > 600)
-				   line_gap = round(Math.max.apply(null, depth_array), 1)/1300;
-		
-				if (i1 < elementlist.length-1)
-				{	
-				   var src_x = shiftscale*(cx_array[i1] - center_x); 				
-					 var src_y = shiftscale*(cy_array[i1] - center_y);
-					 var src_z = line_gap; 
-					 
-					 var dst_x = shiftscale*(cx_array[i1+1] - center_x); 
-					 var dst_y = shiftscale*(cy_array[i1+1] - center_y);
-					 var dst_z = line_gap; 
-					  
-				   if (i1 < elementlist.length-2)	
-				   {	 
-			        var directionline = cylinderLine(new THREE.Vector3(src_x, src_y, src_z), new THREE.Vector3(dst_x, dst_y, dst_z), 0.02, 0.02, line_mat);				   
-				      group.add( directionline );
-			     }
-			     
-			     else
-			     {
-			     	  var endarrow = cylinderLine(new THREE.Vector3(src_x, src_y, src_z), new THREE.Vector3(dst_x, dst_y, dst_z), 0.12, 0, line_mat);				   
-				      group.add( endarrow );
-			     }		
-		    }
-			  
-				i1++;
-	  });
-	  
-	  
-	  	 
-	  
-	  mainscene.add( pivot );
-    pivot.add( group );
-
-    pivot.rotation.x = -Math.PI / 3 ;
-    //pivot.rotation.z = 0.4*Math.PI;  
-    
-
-     var path_width = shiftscale * (Math.max.apply(null, cx_array) -  Math.min.apply(null, cx_array));	 
-     var path_depth = shiftscale * (Math.max.apply(null, cy_array) -  Math.min.apply(null, cy_array));	
-            
-	   maincamera.position.z= 0.6*Math.max(path_width, path_depth);
-	   
-	   pivot.position.x += 0.1*path_width ;
-	        
-	  
-	  var directionlight = new THREE.DirectionalLight( 0xffffff );
-    directionlight.position.set( 3, 3, 3 );
-    mainscene.add( directionlight );
-}
-
-
-
-function setVariable( prop )
-{
-    for (let param in eddyvariables)
-        eddyvariables[param] = false;
-
-    eddyvariables[prop] = true;        
-    readdatafile(currentDataFile);  
-}
-
-
-
-
-
-function onWindowResize() 
-{
-		maincamera.aspect = (window.innerWidth-160) / window.innerHeight;
-	  maincamera.updateProjectionMatrix();
-
-		renderer.setSize( canvas.clientWidth, canvas.clientHeight );
-		trackballControls.handleResize();
-
-		render();
-}
-
-
-			
-function animate() 
-{
-		render();
-		requestAnimationFrame( animate );
-}
-
-
-
-function render() 
-{		
-		var delta = clock.getDelta();       	
-    trackballControls.update(delta);  
-    
-
-		renderer.setClearColor( 0xffffff );
-		renderer.setScissorTest( false );
-		renderer.clear();
-		renderer.setScissorTest( true );
-
-
-		scenes.forEach( function( scene ) 
-		{
-			    
-			    if (spin_orientation < 0)
-			       scene.children[0].rotation.z += 0.03;
-			       
-			    else if (spin_orientation > 0)
-			    	 scene.children[0].rotation.z -= 0.03;
-			    
-			    //scene.children[0].rotation.z = Date.now() * 0.001;
-
-					// get the element that is a place holder for where we want to draw the scene
-					var element = scene.userData.element;
-
-					// get its position relative to the page's viewport
-					var rect = element.getBoundingClientRect();
-
-					// check if it's offscreen. If so skip it
-					if ( rect.bottom < 0 || rect.top  > renderer.domElement.clientHeight || rect.right  < 0 || rect.left > renderer.domElement.clientWidth ) 
-						 return;  // it's off screen
-
-
-					// set the viewport
-					var width  = rect.right - rect.left;
-					var height = rect.bottom - rect.top;
-					var left   = rect.left;
-					var top    = rect.top;
-
-					renderer.setViewport( left, top, width, height );
-					renderer.setScissor( left, top, width, height );
-
-					var camera = scene.userData.camera;
-					renderer.render( scene, camera );
-		});
-	
-		renderer.setViewport( 0, 0, window.innerWidth-160, window.innerHeight );
-	  renderer.setScissor( 0, 0, window.innerWidth-160, window.innerHeight );
-		renderer.render( mainscene, maincamera );		
-		
-		camera2 = new THREE.PerspectiveCamera( 60, CANVAS_WIDTH / CANVAS_HEIGHT, 0.1, 1000 );
-		camera2.position.copy( maincamera.position );
-		//camera2.position.x = 0;
-			
-	  camera2.position.setLength( CAM_DISTANCE );
-    camera2.lookAt( scene2.position );
-            
-    renderer2.render( scene2, camera2 );
-}
-
-
-
-
-
-
-
-function findcolor(thistemp, mintemp, maxtemp, spin_sign) 
-{	
-	  var temparray = [];
-	
-	  if (eddyvariables['a'] == true)
-	  {
-	  	 if (spin_sign==1)
-          temparray = temparray0.slice();
-          
-       else if (spin_sign==-1)
-       	  temparray = temparray3.slice();
-    }
-       
-    else if (eddyvariables['b'] == true)
-       temparray = temparray1.slice();
-       
-    else if (eddyvariables['c'] == true)
-       temparray = temparray2.slice();
-       
-       //console.log(temparray.length);
-			
-	        	
-    var colorindex = -1;
-    var color_num = temparray.length;
-        	  
-    if (thistemp <= mintemp)
-       return 0;
-        	     
-    else if (thistemp >= maxtemp)
-       return (color_num-1);
-       
-       
-        	     
-    else
-    {
-       var fragment = (thistemp - mintemp)/(maxtemp - mintemp);
-       var difference = 1;
-        	  
-       for (var i=0; i<color_num; i++)
-       {
-        	 if ( Math.abs(fragment - temparray[i]) > difference )
-        	  	return i;
-        	  	        
-        	 else
-        	  	difference = Math.abs(fragment - temparray[i]);
-       }
-    }     	  
-}  
-
-
-
-function buildAxis( src, dst, colorHex, dashed ) 
-{
-    var geom = new THREE.Geometry(), mat;
-
-    if (dashed) 
-        mat = new THREE.LineDashedMaterial({ linewidth: 3, color: colorHex, dashSize: 3, gapSize: 3 });
-    
-    else 
-        mat = new THREE.LineBasicMaterial({ linewidth: 3, color: colorHex });
-
-    geom.vertices.push( src.clone() );
-    geom.vertices.push( dst.clone() );
-    geom.computeLineDistances(); // This one is SUPER important, otherwise dashed lines will appear as simple plain lines
-
-    var axis = new THREE.Line( geom, mat, THREE.LineSegments );
-    return axis;
-}
-        
-        
-        
-function coordAxes( length ) 
-{
-    var axes = new THREE.Object3D();
-
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( length, 0, 0 ), 0xFF0000, false ) ); // +X
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( -length, 0, 0 ), 0xFF0000, true) ); // -X
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, length, 0 ), 0x00FF00, false ) ); // +Y
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, -length, 0 ), 0x00FF00, true ) ); // -Y
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, length ), 0x0000FF, false ) ); // +Z
-    axes.add( buildAxis( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -length ), 0x0000FF, true ) ); // -Z
-
-    return axes;
-}       
-        
-        
-function drawColorbar( mintemp, maxtemp, spin_sign )        
-{
-	
-	  var cv  = document.getElementById('colorbarcanvas'),	  
-    ctx = cv.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    
-    var temparray = [], redarray = [], greenarray = [], bluearray = [];
-	
-	  if (eddyvariables['a'] == true)
-	  {
-	  	 if (spin_sign == 1)
-	  	 {
-          temparray = temparray0.slice();
-          redarray = redarray0.slice();
-          greenarray = greenarray0.slice();
-          bluearray = bluearray0.slice();
-       }
-       
-       else if (spin_sign == -1)
-       {
-          temparray = temparray3.slice();
-          redarray = redarray3.slice();
-          greenarray = greenarray3.slice();
-          bluearray = bluearray3.slice();
-       }
-    }
-       
-    else if (eddyvariables['b'] == true)
-    {
-       temparray = temparray1.slice();
-       redarray = redarray1.slice();
-       greenarray = greenarray1.slice();
-       bluearray = bluearray1.slice();
-    }
-       
-    else if (eddyvariables['c'] == true)
-    {
-       temparray = temparray2.slice(); 
-       redarray = redarray2.slice();
-       greenarray = greenarray2.slice();
-       bluearray = bluearray2.slice();
-    }
-    
-
-    for (var i = 0; i < temparray.length-1; i++) 
-    {        
-        var currentRed = Math.floor(temparray.length*redarray[i]);
-        var currentGreen = Math.floor(temparray.length*greenarray[i]);
-        var currentBlue = Math.floor(temparray.length*bluearray[i]);
-               
-        ctx.fillStyle = 'rgb(' + currentRed + ', ' + currentGreen + ', ' + currentBlue + ')';            
-        ctx.fillRect( 22 + (256/temparray.length)*i, 0, 256/temparray.length, 25);        
-    } 
-    
-   
-    ctx.fillStyle = 'rgb(0, 0, 0)';  
-    ctx.font="Georgia bold 11px";    
-    
-    
-    if (eddyvariables['a'] == true || eddyvariables['b'] == true)
-    { 
-       ctx.fillText(round(mintemp, 1), 0, 18);       
-       ctx.fillText(round(maxtemp, 1), 279, 18); 
-    }
-    
-    else if (eddyvariables['c'] == true)
-    {
-    	 ctx.fillText(mintemp, 10, 18);       
-       ctx.fillText(maxtemp, 279, 18); 
-    }
-}
-
-
-
-function addColorRange( thisindex )
-{
-	  var leftval, rightval, leftindex, rightindex, barwidth;	  
-       
-	  if (eddyvariables['a'] == true)
-	  {
-	  	 leftval = minmaxarray[thisindex-1].tmin;
-       rightval = minmaxarray[thisindex-1].tmax;
-       
-       leftindex = findcolor(leftval, 0.99*temp_min, 1.01*temp_max, spin_orientation);
-       rightindex = findcolor(rightval, 0.99*temp_min, 1.01*temp_max, spin_orientation);
-       
-       barwidth = 256/temparray0.length;
-	  }
-	  
-	  else if (eddyvariables['b'] == true)
-	  {
-	  	 leftval = minmaxarray[thisindex-1].stmin;
-       rightval = minmaxarray[thisindex-1].stmax;
-       
-       leftindex = findcolor(leftval, 0.99*salt_min, 1.01*salt_max, spin_orientation);
-       rightindex = findcolor(rightval, 0.99*salt_min, 1.01*salt_max, spin_orientation);
-       
-       barwidth = 256/temparray1.length;
-	  }
-
-	  else if (eddyvariables['c'] == true)
-	  {
-	  	 leftval = minmaxarray[thisindex-1].spdmin;
-       rightval = minmaxarray[thisindex-1].spdmax;
-       
-       leftindex = findcolor(leftval, 0.99*speed_min, 1.01*speed_max, spin_orientation);
-       rightindex = findcolor(rightval, 0.99*speed_min, 1.01*speed_max, spin_orientation);
-       
-       barwidth = 256/temparray2.length;
-	  }
-	
-	  var cv  = document.getElementById('colorbarcanvas'),	  
-    ctx = cv.getContext('2d');
-    ctx.clearRect(0, 25, canvas.width, canvas.height);
-  
-    ctx.fillStyle = 'rgb(255, 0, 0)'; 
-    ctx.fillRect( 22 + leftindex*barwidth, 25, barwidth, 15);  
-    ctx.fillStyle = 'rgb(255, 0, 0)';     
-    ctx.fillRect( 22 + rightindex*barwidth, 25, barwidth, 15);  
-    ctx.fillStyle = 'rgb(255, 0, 0)';  
-    ctx.fillRect( 22 + leftindex*barwidth, 40, (rightindex-leftindex)*barwidth, barwidth);   
-}
-
-
-
-
-function geodistance(lat1, lon1, lat2, lon2, unit) 
-{
-	  var radlat1 = Math.PI * lat1/180
-	  var radlat2 = Math.PI * lat2/180
-	  var theta = lon1-lon2
-	  var radtheta = Math.PI * theta/180
-	  var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-	  dist = Math.acos(dist)
-	  dist = dist * 180/Math.PI
-	  dist = dist * 60 * 1.1515
-	  if (unit=="K") 
-	     { dist = dist * 1.609344 }
-	  if (unit=="N") 
-	     { dist = dist * 0.8684 }
-	
-	  return dist
-}
-
-
-
-
-function round(value, decimals) 
-{
-    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-}
-
-
-
-function cylinderLine(point1, point2, radius1, radius2, material) 
-{
-    var direction = new THREE.Vector3().subVectors(point2, point1);
-    var orientation = new THREE.Matrix4();
-    orientation.lookAt(point1, point2, new THREE.Object3D().up);
-    orientation.multiply(new THREE.Matrix4().set(1, 0, 0, 0,
-                                                 0, 0, 1, 0,
-                                                 0, -1, 0, 0,
-                                                 0, 0, 0, 1));
-    var edgeGeometry = new THREE.CylinderGeometry(radius2, radius1, direction.length(), 10, 1);
-    var edge = new THREE.Mesh(edgeGeometry, material);
-    edge.applyMatrix(orientation);
-    
-    edge.position.x = (point2.x + point1.x) / 2;
-    edge.position.y = (point2.y + point1.y) / 2;
-    edge.position.z = (point2.z + point1.z) / 2;
-    
-    return edge;
-}
-
-
-
-function drawAxes( length ) 
-{
-    var axes = new THREE.Object3D();
-    var material1 = new THREE.MeshBasicMaterial({color: 0xFF0000, transparent: true, opacity: 0.99});
-    var material2 = new THREE.MeshBasicMaterial({color: 0xCC00CC, transparent: true, opacity: 0.99});
-    var material3 = new THREE.MeshBasicMaterial({color: 0x0000FF, transparent: true, opacity: 0.99});
-       
-
-    axes.add( cylinderLine( new THREE.Vector3( -length, 0, 0 ), new THREE.Vector3( length, 0, 0 ), 2, 2, material1 ) ); 
-    axes.add( cylinderLine( new THREE.Vector3( 0, -length, 0 ), new THREE.Vector3( 0, length, 0 ), 2, 2, material2 ) ); 
-    axes.add( cylinderLine( new THREE.Vector3( 0, 0, -length ), new THREE.Vector3( 0, 0, length ), 2, 2, material3 ) ); 
-    
-    axes.add( cylinderLine( new THREE.Vector3( length, 0, 0 ), new THREE.Vector3( 1.2*length, 0, 0 ), 5, 0, material1 ) ); 
-    axes.add( cylinderLine( new THREE.Vector3( 0, length, 0 ), new THREE.Vector3( 0, 1.2*length, 0 ), 5, 0, material2 ) ); 
-    axes.add( cylinderLine( new THREE.Vector3( 0, 0, length ), new THREE.Vector3( 0, 0, 1.2*length ), 5, 0, material3 ) ); 
-    
-    axes.rotation.x -= Math.PI / 3 ;  
-
-
-    return axes;
-}
-
-
-
-function ondblclick(event) 
-{
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-	  
-	
-	  var vector = new THREE.Vector3( mouse.x, mouse.y, -1 );
-	  projector.unprojectVector( vector, maincamera );
-	  var ray = new THREE.Raycaster( maincamera.position, vector.sub( maincamera.position ).normalize() );
-
-
-	  var intersects = ray.intersectObjects( meshlist );
-
-	
-	  if ( intersects.length > 0 )
-	  { 
-        //console.log( parseInt(intersects[0].object.name) );	  
-        currentEddyID = parseInt(intersects[0].object.name);					  					  
-				clickEddy(currentEddyID);
-					       
-				var element = scenes[0].userData.element;					
-				var rect = element.getBoundingClientRect();
-				
-				console.log(1.3*(currentEddyID-1)*[rect.bottom - rect.top]);
-		 
-			  window.scrollTo( 0, 1.3*(currentEddyID-1)*[rect.bottom - rect.top] );        
-    }
-}
-
-
-
-
-</script>
-</body>
+
+          currentmesh = new THREE.Mesh(newGeometry, newMaterial);
+
+          currentmesh.castShadow = true;
+          currentmesh.receiveShadow = true;
+          currentmesh.position.set(
+            shiftscale * (cx_array[i1] - center_x),
+            shiftscale * (cy_array[i1] - center_y),
+            0
+          );
+          currentmesh.name = i1 + 1;
+
+          currentmesh.scale.set(1, 1, 1.3);
+
+          group.add(currentmesh);
+          meshlist.push(currentmesh);
+
+          var line_gap = 0.5;
+
+          if (round(Math.max.apply(null, depth_array), 1) > 600)
+            line_gap = round(Math.max.apply(null, depth_array), 1) / 1300;
+
+          if (i1 < elementlist.length - 1) {
+            var src_x = shiftscale * (cx_array[i1] - center_x);
+            var src_y = shiftscale * (cy_array[i1] - center_y);
+            var src_z = line_gap;
+
+            var dst_x = shiftscale * (cx_array[i1 + 1] - center_x);
+            var dst_y = shiftscale * (cy_array[i1 + 1] - center_y);
+            var dst_z = line_gap;
+
+            if (i1 < elementlist.length - 2) {
+              var directionline = cylinderLine(
+                new THREE.Vector3(src_x, src_y, src_z),
+                new THREE.Vector3(dst_x, dst_y, dst_z),
+                0.02,
+                0.02,
+                line_mat
+              );
+              group.add(directionline);
+            } else {
+              var endarrow = cylinderLine(
+                new THREE.Vector3(src_x, src_y, src_z),
+                new THREE.Vector3(dst_x, dst_y, dst_z),
+                0.12,
+                0,
+                line_mat
+              );
+              group.add(endarrow);
+            }
+          }
+
+          i1++;
+        });
+
+        mainscene.add(pivot);
+        pivot.add(group);
+
+        pivot.rotation.x = -Math.PI / 3;
+        //pivot.rotation.z = 0.4*Math.PI;
+
+        var path_width =
+          shiftscale *
+          (Math.max.apply(null, cx_array) - Math.min.apply(null, cx_array));
+        var path_depth =
+          shiftscale *
+          (Math.max.apply(null, cy_array) - Math.min.apply(null, cy_array));
+
+        maincamera.position.z = 0.6 * Math.max(path_width, path_depth);
+
+        pivot.position.x += 0.1 * path_width;
+
+        var directionlight = new THREE.DirectionalLight(0xffffff);
+        directionlight.position.set(3, 3, 3);
+        mainscene.add(directionlight);
+      }
+
+      function setVariable(prop) {
+        for (let param in eddyvariables) eddyvariables[param] = false;
+
+        eddyvariables[prop] = true;
+        readdatafile(currentDataFile);
+      }
+
+      function onWindowResize() {
+        maincamera.aspect = (window.innerWidth - 160) / window.innerHeight;
+        maincamera.updateProjectionMatrix();
+
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        trackballControls.handleResize();
+
+        render();
+      }
+
+      function animate() {
+        render();
+        requestAnimationFrame(animate);
+      }
+
+      function render() {
+        var delta = clock.getDelta();
+        trackballControls.update(delta);
+
+        renderer.setClearColor(0xffffff);
+        renderer.setScissorTest(false);
+        renderer.clear();
+        renderer.setScissorTest(true);
+
+        scenes.forEach(function (scene) {
+          if (spin_orientation < 0) scene.children[0].rotation.z += 0.03;
+          else if (spin_orientation > 0) scene.children[0].rotation.z -= 0.03;
+
+          //scene.children[0].rotation.z = Date.now() * 0.001;
+
+          // get the element that is a place holder for where we want to draw the scene
+          var element = scene.userData.element;
+
+          // get its position relative to the page's viewport
+          var rect = element.getBoundingClientRect();
+
+          // check if it's offscreen. If so skip it
+          if (
+            rect.bottom < 0 ||
+            rect.top > renderer.domElement.clientHeight ||
+            rect.right < 0 ||
+            rect.left > renderer.domElement.clientWidth
+          )
+            return; // it's off screen
+
+          // set the viewport
+          var width = rect.right - rect.left;
+          var height = rect.bottom - rect.top;
+          var left = rect.left;
+          var top = rect.top;
+
+          renderer.setViewport(left, top, width, height);
+          renderer.setScissor(left, top, width, height);
+
+          var camera = scene.userData.camera;
+          renderer.render(scene, camera);
+        });
+
+        renderer.setViewport(0, 0, window.innerWidth - 160, window.innerHeight);
+        renderer.setScissor(0, 0, window.innerWidth - 160, window.innerHeight);
+        renderer.render(mainscene, maincamera);
+
+        camera2 = new THREE.PerspectiveCamera(
+          60,
+          CANVAS_WIDTH / CANVAS_HEIGHT,
+          0.1,
+          1000
+        );
+        camera2.position.copy(maincamera.position);
+        //camera2.position.x = 0;
+
+        camera2.position.setLength(CAM_DISTANCE);
+        camera2.lookAt(scene2.position);
+
+        renderer2.render(scene2, camera2);
+      }
+
+      function findcolor(thistemp, mintemp, maxtemp, spin_sign) {
+        var temparray = [];
+
+        if (eddyvariables["a"] == true) {
+          if (spin_sign == 1) temparray = temparray0.slice();
+          else if (spin_sign == -1) temparray = temparray3.slice();
+        } else if (eddyvariables["b"] == true) temparray = temparray1.slice();
+        else if (eddyvariables["c"] == true) temparray = temparray2.slice();
+
+        var colorindex = -1;
+        var color_num = temparray.length;
+        if (thistemp <= mintemp) return 0;
+        else if (thistemp >= maxtemp) return color_num - 1;
+        else {
+          var fragment = (thistemp - mintemp) / (maxtemp - mintemp);
+          var difference = 1;
+
+          for (var i = 0; i < color_num; i++) {
+            if (Math.abs(fragment - temparray[i]) > difference) return i;
+            else difference = Math.abs(fragment - temparray[i]);
+          }
+        }
+      }
+
+      function buildAxis(src, dst, colorHex, dashed) {
+        var geom = new THREE.Geometry(),
+          mat;
+
+        if (dashed)
+          mat = new THREE.LineDashedMaterial({
+            linewidth: 3,
+            color: colorHex,
+            dashSize: 3,
+            gapSize: 3,
+          });
+        else
+          mat = new THREE.LineBasicMaterial({ linewidth: 3, color: colorHex });
+
+        geom.vertices.push(src.clone());
+        geom.vertices.push(dst.clone());
+        geom.computeLineDistances(); // This one is SUPER important, otherwise dashed lines will appear as simple plain lines
+
+        var axis = new THREE.Line(geom, mat, THREE.LineSegments);
+        return axis;
+      }
+
+      function coordAxes(length) {
+        var axes = new THREE.Object3D();
+
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(length, 0, 0),
+            0xff0000,
+            false
+          )
+        ); // +X
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(-length, 0, 0),
+            0xff0000,
+            true
+          )
+        ); // -X
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, length, 0),
+            0x00ff00,
+            false
+          )
+        ); // +Y
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, -length, 0),
+            0x00ff00,
+            true
+          )
+        ); // -Y
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, length),
+            0x0000ff,
+            false
+          )
+        ); // +Z
+        axes.add(
+          buildAxis(
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, -length),
+            0x0000ff,
+            true
+          )
+        ); // -Z
+
+        return axes;
+      }
+
+      function drawColorbar(mintemp, maxtemp, spin_sign) {
+        var cv = document.getElementById("colorbarcanvas"),
+          ctx = cv.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        var temparray = [],
+          redarray = [],
+          greenarray = [],
+          bluearray = [];
+
+        if (eddyvariables["a"] == true) {
+          if (spin_sign == 1) {
+            temparray = temparray0.slice();
+            redarray = redarray0.slice();
+            greenarray = greenarray0.slice();
+            bluearray = bluearray0.slice();
+          } else if (spin_sign == -1) {
+            // console.log("We Colored bar for temperatures");
+            temparray = temparray3.slice();
+            redarray = redarray3.slice();
+            greenarray = greenarray3.slice();
+            bluearray = bluearray3.slice();
+          }
+        } else if (eddyvariables["b"] == true) {
+          temparray = temparray1.slice();
+          redarray = redarray1.slice();
+          greenarray = greenarray1.slice();
+          bluearray = bluearray1.slice();
+        } else if (eddyvariables["c"] == true) {
+          temparray = temparray2.slice();
+          redarray = redarray2.slice();
+          greenarray = greenarray2.slice();
+          bluearray = bluearray2.slice();
+        }
+
+        for (var i = 0; i < temparray.length - 1; i++) {
+          var currentRed = Math.floor(temparray.length * redarray[i]);
+          var currentGreen = Math.floor(temparray.length * greenarray[i]);
+          var currentBlue = Math.floor(temparray.length * bluearray[i]);
+
+          ctx.fillStyle =
+            "rgb(" +
+            currentRed +
+            ", " +
+            currentGreen +
+            ", " +
+            currentBlue +
+            ")";
+          ctx.fillRect(
+            22 + (256 / temparray.length) * i,
+            0,
+            256 / temparray.length,
+            25
+          );
+        }
+
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.font = "Georgia bold 11px";
+
+        if (eddyvariables["a"] == true || eddyvariables["b"] == true) {
+          ctx.fillText(round(mintemp, 1), 0, 18);
+          ctx.fillText(round(maxtemp, 1), 279, 18);
+        } else if (eddyvariables["c"] == true) {
+          ctx.fillText(mintemp, 10, 18);
+          ctx.fillText(maxtemp, 279, 18);
+        }
+      }
+
+      // need to know if this colors the eddies
+      function addColorRange(thisindex) {
+        var leftval, rightval, leftindex, rightindex, barwidth;
+
+        if (eddyvariables["a"] == true) {
+          leftval = minmaxarray[thisindex - 1].tmin;
+          rightval = minmaxarray[thisindex - 1].tmax;
+
+          leftindex = findcolor(
+            leftval,
+            0.99 * temp_min,
+            1.01 * temp_max,
+            spin_orientation
+          );
+          rightindex = findcolor(
+            rightval,
+            0.99 * temp_min,
+            1.01 * temp_max,
+            spin_orientation
+          );
+
+          barwidth = 256 / temparray0.length;
+        } else if (eddyvariables["b"] == true) {
+          leftval = minmaxarray[thisindex - 1].stmin;
+          rightval = minmaxarray[thisindex - 1].stmax;
+
+          leftindex = findcolor(
+            leftval,
+            0.99 * salt_min,
+            1.01 * salt_max,
+            spin_orientation
+          );
+          rightindex = findcolor(
+            rightval,
+            0.99 * salt_min,
+            1.01 * salt_max,
+            spin_orientation
+          );
+
+          barwidth = 256 / temparray1.length;
+        } else if (eddyvariables["c"] == true) {
+          leftval = minmaxarray[thisindex - 1].spdmin;
+          rightval = minmaxarray[thisindex - 1].spdmax;
+
+          leftindex = findcolor(
+            leftval,
+            0.99 * speed_min,
+            1.01 * speed_max,
+            spin_orientation
+          );
+          rightindex = findcolor(
+            rightval,
+            0.99 * speed_min,
+            1.01 * speed_max,
+            spin_orientation
+          );
+
+          barwidth = 256 / temparray2.length;
+        }
+
+        var cv = document.getElementById("colorbarcanvas"),
+          ctx = cv.getContext("2d");
+        ctx.clearRect(0, 25, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.fillRect(22 + leftindex * barwidth, 25, barwidth, 15);
+        ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.fillRect(22 + rightindex * barwidth, 25, barwidth, 15);
+        ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.fillRect(
+          22 + leftindex * barwidth,
+          40,
+          (rightindex - leftindex) * barwidth,
+          barwidth
+        );
+      }
+
+      function geodistance(lat1, lon1, lat2, lon2, unit) {
+        var radlat1 = (Math.PI * lat1) / 180;
+        var radlat2 = (Math.PI * lat2) / 180;
+        var theta = lon1 - lon2;
+        var radtheta = (Math.PI * theta) / 180;
+        var dist =
+          Math.sin(radlat1) * Math.sin(radlat2) +
+          Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+        dist = Math.acos(dist);
+        dist = (dist * 180) / Math.PI;
+        dist = dist * 60 * 1.1515;
+        if (unit == "K") {
+          dist = dist * 1.609344;
+        }
+        if (unit == "N") {
+          dist = dist * 0.8684;
+        }
+
+        return dist;
+      }
+
+      function round(value, decimals) {
+        return Number(Math.round(value + "e" + decimals) + "e-" + decimals);
+      }
+
+      function cylinderLine(point1, point2, radius1, radius2, material) {
+        var direction = new THREE.Vector3().subVectors(point2, point1);
+        var orientation = new THREE.Matrix4();
+        orientation.lookAt(point1, point2, new THREE.Object3D().up);
+        orientation.multiply(
+          new THREE.Matrix4().set(
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          )
+        );
+        var edgeGeometry = new THREE.CylinderGeometry(
+          radius2,
+          radius1,
+          direction.length(),
+          10,
+          1
+        );
+        var edge = new THREE.Mesh(edgeGeometry, material);
+        edge.applyMatrix(orientation);
+
+        edge.position.x = (point2.x + point1.x) / 2;
+        edge.position.y = (point2.y + point1.y) / 2;
+        edge.position.z = (point2.z + point1.z) / 2;
+
+        return edge;
+      }
+
+      function drawAxes(length) {
+        var axes = new THREE.Object3D();
+        var material1 = new THREE.MeshBasicMaterial({
+          color: 0xff0000,
+          transparent: true,
+          opacity: 0.99,
+        });
+        var material2 = new THREE.MeshBasicMaterial({
+          color: 0xcc00cc,
+          transparent: true,
+          opacity: 0.99,
+        });
+        var material3 = new THREE.MeshBasicMaterial({
+          color: 0x0000ff,
+          transparent: true,
+          opacity: 0.99,
+        });
+
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(-length, 0, 0),
+            new THREE.Vector3(length, 0, 0),
+            2,
+            2,
+            material1
+          )
+        );
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(0, -length, 0),
+            new THREE.Vector3(0, length, 0),
+            2,
+            2,
+            material2
+          )
+        );
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(0, 0, -length),
+            new THREE.Vector3(0, 0, length),
+            2,
+            2,
+            material3
+          )
+        );
+
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(length, 0, 0),
+            new THREE.Vector3(1.2 * length, 0, 0),
+            5,
+            0,
+            material1
+          )
+        );
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(0, length, 0),
+            new THREE.Vector3(0, 1.2 * length, 0),
+            5,
+            0,
+            material2
+          )
+        );
+        axes.add(
+          cylinderLine(
+            new THREE.Vector3(0, 0, length),
+            new THREE.Vector3(0, 0, 1.2 * length),
+            5,
+            0,
+            material3
+          )
+        );
+
+        axes.rotation.x -= Math.PI / 3;
+
+        return axes;
+      }
+
+      function ondblclick(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        var vector = new THREE.Vector3(mouse.x, mouse.y, -1);
+        projector.unprojectVector(vector, maincamera);
+        var ray = new THREE.Raycaster(
+          maincamera.position,
+          vector.sub(maincamera.position).normalize()
+        );
+
+        var intersects = ray.intersectObjects(meshlist);
+
+        if (intersects.length > 0) {
+          //console.log( parseInt(intersects[0].object.name) );
+          currentEddyID = parseInt(intersects[0].object.name);
+          clickEddy(currentEddyID);
+
+          var element = scenes[0].userData.element;
+          var rect = element.getBoundingClientRect();
+
+          console.log(1.3 * (currentEddyID - 1) * [rect.bottom - rect.top]);
+
+          window.scrollTo(
+            0,
+            1.3 * (currentEddyID - 1) * [rect.bottom - rect.top]
+          );
+        }
+      }
+    </script>
+  </body>
 </html>
