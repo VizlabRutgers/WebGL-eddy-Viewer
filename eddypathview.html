@@ -652,7 +652,7 @@
 
         window.addEventListener("resize", onWindowResize, false);
       }
-
+/*
       function readcolorfile(colorfile, sign) {
         if (sign == 3) {
           temparray3 = [
@@ -1531,6 +1531,59 @@
         //  xhttp0.open("GET", colorfile, true);
         //  xhttp0.send();
       }
+      */
+
+      function readcolorfile (colorfile, sign) {
+         var xhttp0 = new XMLHttpRequest();
+         xhttp0.onreadystatechange = function() 
+         {
+        	   if (this.readyState == 4 && this.status == 200) 
+        	   {
+        	  	   var inputlines = this.responseText.split("\n");
+        	  	 
+        	  	   for (var i=0; i<inputlines.length; i++)
+               {
+               	   var thisline = inputlines[i];
+              	   var vectors = thisline.split("  ");
+              	   
+              	   if (sign == 0)
+              	   {
+              	      temparray0.push(parseFloat(vectors[0]));
+              	      redarray0.push(parseFloat(vectors[1]));
+              	      greenarray0.push(parseFloat(vectors[2]));
+              	      bluearray0.push(parseFloat(vectors[3]));
+              	   }
+              	   
+              	   else if (sign == 1)
+              	   {
+              	      temparray1.push(parseFloat(vectors[0]));
+              	      redarray1.push(parseFloat(vectors[1]));
+              	      greenarray1.push(parseFloat(vectors[2]));
+              	      bluearray1.push(parseFloat(vectors[3]));
+              	   }
+              	   
+              	   else if (sign == 2)
+              	   {
+              	      temparray2.push(parseFloat(vectors[0]));
+              	      redarray2.push(parseFloat(vectors[1]));
+              	      greenarray2.push(parseFloat(vectors[2]));
+              	      bluearray2.push(parseFloat(vectors[3]));
+              	   }
+              	   
+              	   else if (sign == 3)
+              	   {
+              	      temparray3.push(parseFloat(vectors[0]));
+              	      redarray3.push(parseFloat(vectors[1]));
+              	      greenarray3.push(parseFloat(vectors[2]));
+              	      bluearray3.push(parseFloat(vectors[3]));
+              	   }
+               }
+        	}
+      }
+      xhttp0.open("GET", colorfile, true);
+      xhttp0.send();   
+   }
+
 
       function readdatafile(datafile) {
         var reader = new FileReader();
@@ -2549,7 +2602,7 @@
           1
         );
         var edge = new THREE.Mesh(edgeGeometry, material);
-        edge.applyMatrix(orientation);
+        edge.applyMatrix4(orientation);
 
         edge.position.x = (point2.x + point1.x) / 2;
         edge.position.y = (point2.y + point1.y) / 2;
