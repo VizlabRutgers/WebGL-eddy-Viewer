@@ -225,6 +225,7 @@
         blending: THREE.MultiplyBlending,
       });
       var cubeMaterial = new THREE.MeshDepthMaterial();
+      cubeMaterial.colorWrite = false;
       var sidemat = new THREE.MeshLambertMaterial({ color: 0x66cc00 });
       var insetmat = new THREE.MeshBasicMaterial({ color: 0x66cc00 });
       var saved_mat;
@@ -2695,7 +2696,7 @@
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         var vector = new THREE.Vector3(mouse.x, mouse.y, -1);
-        projector.unprojectVector(vector, maincamera);
+        vector.unproject(maincamera);
         var ray = new THREE.Raycaster(
           maincamera.position,
           vector.sub(maincamera.position).normalize()
