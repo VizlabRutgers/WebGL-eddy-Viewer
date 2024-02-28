@@ -2696,7 +2696,7 @@
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         var vector = new THREE.Vector3(mouse.x, mouse.y, -1);
-        vector.unproject(maincamera);
+        projector.unprojectVector(vector, maincamera);
         var ray = new THREE.Raycaster(
           maincamera.position,
           vector.sub(maincamera.position).normalize()
